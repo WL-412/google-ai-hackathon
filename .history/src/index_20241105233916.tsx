@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Menu from './components/menu';
+import Menu from './menu';
 
 const root = document.createElement("div")
 root.className = "container"

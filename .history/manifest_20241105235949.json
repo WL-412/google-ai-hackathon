@@ -13,8 +13,8 @@
         "<all_urls>"
       ],
       "js": [
-        "js/contentScript.js"
+        "src/content/contentScript.ts"
       ]
     }
-  ]
+  ],
 }
