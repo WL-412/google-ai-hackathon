@@ -7,6 +7,9 @@
     "default_popup": "js/index.html",
     "default_title": "React Chrome Extension"
   },
+  "background": {
+    "service_worker": "js/backgroundScript.js"
+  },
   "content_scripts": [
     {
       "matches": [

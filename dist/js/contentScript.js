@@ -1,1 +1,1 @@
-console.log("Hello from content script!");
+(()=>{console.log("Content script is running!");const e=document.createElement("div");e.id="my-extension-placeholder",e.style.position="fixed",e.style.bottom="20px",e.style.right="20px",e.style.padding="10px",e.style.backgroundColor="#fff",e.style.border="1px solid #ccc",e.style.cursor="pointer",e.innerText="Open Panel",document.body.appendChild(e),e.addEventListener("click",(()=>{chrome.runtime.sendMessage({action:"open_panel"})}))})();

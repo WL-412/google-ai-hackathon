@@ -6,7 +6,6 @@ module.exports = {
   entry: {
     index: "./src/index.tsx",
     contentScript: './src/scripts/contentScript.js',
-    backgroundScript: './src/scripts/backgroundScript.js'
   },
   mode: "production",
   module: {

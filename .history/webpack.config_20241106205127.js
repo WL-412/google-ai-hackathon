@@ -5,8 +5,8 @@ const CopyPlugin = require("copy-webpack-plugin")
 module.exports = {
   entry: {
     index: "./src/index.tsx",
-    contentScript: './src/scripts/contentScript.js',
-    backgroundScript: './src/scripts/backgroundScript.js'
+    contentScript: './src/content/contentScript.js',
+    background: "./src/background.js"
   },
   mode: "production",
   module: {
