@@ -5,13 +5,19 @@ const CopyPlugin = require("copy-webpack-plugin")
 module.exports = {
   entry: {
     index: "./src/index.tsx",
-    popup: "./src/popup.tsx",
     contentScript: './src/scripts/contentScript.js',
     backgroundScript: './src/scripts/backgroundScript.js'
   },
   mode: "production",
   module: {
     rules: [
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][hash][ext]', // Custom folder for images
+        },
+      },
       {
         test: /\.tsx?$/,
         use: [
@@ -39,7 +45,7 @@ module.exports = {
         { from: "manifest.json", to: "../manifest.json" },
       ],
     }),
-    ...getHtmlPlugins(["index", "popup"]),
+    ...getHtmlPlugins(["index"]),
   ],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],

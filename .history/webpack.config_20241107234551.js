@@ -39,7 +39,7 @@ module.exports = {
         { from: "manifest.json", to: "../manifest.json" },
       ],
     }),
-    ...getHtmlPlugins(["index", "popup"]),
+    ...getHtmlPlugins(["index"]),
   ],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],

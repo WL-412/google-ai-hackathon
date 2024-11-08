@@ -4,7 +4,6 @@
   "name": "React Chrome Extension",
   "description": "This is a Chrome extension built with React and TypeScript",
   "action": {
-    "default_popup": "js/popup.html",
     "default_title": "React Chrome Extension"
   },
   "background": {
@@ -16,8 +15,10 @@
         "<all_urls>"
       ],
       "js": [
-        "js/contentScript.js",
-        "js/index.js"
+        [
+          "js/contentScript.js",
+          "js/index.js"
+        ]
       ]
     }
   ]
