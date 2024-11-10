@@ -5,10 +5,10 @@ type FloatingFigureProps = {
   onClick: () => void;  // Prop to handle click events
 };
 
-const FloatingFigure: React.FC = () => {
+const FloatingFigure: React.FC<FloatingFigureProps> = ({ onClick }) => {
   return (
     <div
-
+      onClick={onClick}
       style={{
         width: '50px',
         height: '50px',

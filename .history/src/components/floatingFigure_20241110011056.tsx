@@ -1,9 +1,7 @@
 // FloatingFigure.tsx
 import React from 'react';
 
-type FloatingFigureProps = {
-  onClick: () => void;  // Prop to handle click events
-};
+
 
 const FloatingFigure: React.FC = () => {
   return (

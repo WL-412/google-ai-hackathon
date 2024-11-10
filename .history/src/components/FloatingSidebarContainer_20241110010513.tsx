@@ -5,11 +5,11 @@ import Draggable from 'react-draggable';
 
 const FloatingSidebarContainer: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [dragging, setDragging] = useState(false);
 
   const handleFigureClick = () => {
-    if (!dragging) {
+    if (!isDragging) {
       setIsSidebarOpen(true);
     }
   };
@@ -18,33 +18,25 @@ const FloatingSidebarContainer: React.FC = () => {
     setIsSidebarOpen(false);
   };
 
-  const handleDrag = (e: any, data: any) => {
-    setPosition({ x: data.x, y: data.y });
-    setDragging(true);
-  };
-
   const handleDragStart = () => {
-    setDragging(false);
+    setIsDragging(true);
   };
 
-  const handleDragStop = () => {
-    if (!dragging) {
-      setDragging(false);
-    }
+  const handleDragStop = (e: any, data: any) => {
+    setIsDragging(false);
+    setPosition({ x: data.x, y: data.y });
   };
 
   return (
     <div style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000 }}>
-      <Draggable onStart={handleDragStart} onDrag={handleDrag} onStop={handleDragStop}>
-        <div onClick={handleFigureClick}>
-          <FloatingFigure />
+      <Draggable onStart={handleDragStart} onStop={handleDragStop}>
+        <div>
+          <FloatingFigure onClick={handleFigureClick} />
         </div>
       </Draggable>
-      {isSidebarOpen && (
-        <div style={{ position: 'absolute', left: `${position.x - 250}px`, top: `${position.y - 400}px` }}>
-          <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
-        </div>
-      )}
+      <div style={{ position: 'absolute', left: `${position.x - 250}px`, top: `${position.y - 400}px` }}>
+        <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
+      </div>
     </div>
   );
 };
