@@ -26,7 +26,7 @@ const FloatingSidebarContainer: React.FC = () => {
           <FloatingFigure onClick={handleFigureClick} />
         </div>
       </Draggable>
-      <div style={{ position: 'absolute', left: `${position.x - 250}px`, top: `${position.y - 400}px` }}>
+      <div style={{ position: 'absolute', left: `${position.x}px`, top: `${position.y}px` }}>
         <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
       </div>
     </div>
