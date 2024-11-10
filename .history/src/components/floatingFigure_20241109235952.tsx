@@ -14,12 +14,15 @@ const FloatingFigure: React.FC<FloatingFigureProps> = ({ onClick }) => {
         height: '50px',
         backgroundColor: '#007bff',  // Placeholder color
         borderRadius: '50%',
-        display: 'inline-block',
+        display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         color: 'white',
         fontWeight: 'bold',
         fontSize: '18px',
+        position: 'fixed',
+        bottom: '20px',  // Adjust positioning as needed
+        right: '20px',
         cursor: 'pointer',
         zIndex: 1000
       }}

@@ -10,14 +10,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <div
       style={{
-        width: '250px',
+        display: isOpen ? 'block' : 'none',
+        position: 'fixed',  // Keeps the sidebar floating
+        bottom: '50px',         // Centers the sidebar vertically
+        right: '50px%',        // Centers the sidebar horizontally
+        transform: 'translate(-50%, -50%)', // Offsets the sidebar to the center
+        width: '300px',
         height: '400px',
         backgroundColor: '#ffffff',
-        border: '1px solid #ddd',
+        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
         borderRadius: '8px',
-        boxShadow: 'rgba(0, 0, 0, 0.5) 0px 0px 15px',
-        zIndex: 1001,
-        display: isOpen ? 'block' : 'none', // Only show when isOpen is true
+        zIndex: 9999,
+        padding: '20px',
       }}
     >
       <button onClick={onClose} style={{ float: 'right', margin: '10px' }}>Close</button>

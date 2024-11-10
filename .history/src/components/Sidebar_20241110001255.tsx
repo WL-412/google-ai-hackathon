@@ -10,8 +10,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
     <div
       style={{
-        width: '250px',
-        height: '400px',
+        position: 'fixed',
+        width: '250px',  // Set a width for the floating sidebar
+        height: '400px', // Define the height as needed
         backgroundColor: '#ffffff',
         border: '1px solid #ddd',
         borderRadius: '8px',

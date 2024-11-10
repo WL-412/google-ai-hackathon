@@ -21,7 +21,6 @@ const FloatingFigure: React.FC<FloatingFigureProps> = ({ onClick }) => {
         fontWeight: 'bold',
         fontSize: '18px',
         cursor: 'pointer',
-        zIndex: 1000
       }}
     >
       ?
