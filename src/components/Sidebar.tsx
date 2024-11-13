@@ -1,5 +1,6 @@
 // Sidebar.tsx
-import React from "react";
+import React, { useState } from "react";
+import Questionnaire from "./Questionnaire";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -8,31 +9,25 @@ type SidebarProps = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
-  const formatSummary = (text: string) => {
-    const lines = text.split("\n");
-    return lines.map((line, index) => {
-      if (line.startsWith("##")) {
-        return <h4 key={index}>{line.substring(2).trim()}</h4>;
-      } else if (line.includes("**")) {
-        const parts = line.split("**");
-        return (
-          <p key={index}>
-            {parts.map((part, i) =>
-              i % 2 === 1 ? <strong key={i}>{part}</strong> : part
-            )}
-          </p>
-        );
-      } else {
-        return <p key={index}>{line}</p>;
+  const [feedback, setFeedback] = useState<string[]>([]);
+
+  const handleAnswersSubmit = (answers: string[]) => {
+    // Send the answers to the backend for evaluation
+    chrome.runtime.sendMessage(
+      { action: "evaluate_answers", questions: summary, answers },
+      (response) => {
+        if (response && response.feedback) {
+          setFeedback(response.feedback);
+        }
       }
-    });
+    );
   };
 
   return (
     <div
       style={{
         width: "350px",
-        height: "700px",
+        height: "600px",
         backgroundColor: "#ffffff",
         border: "1px solid #ddd",
         borderRadius: "8px",
@@ -62,7 +57,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
           height: "calc(100% - 40px)",
         }}
       >
-        {formatSummary(summary)}
+        <h3>LET'S DO THIS</h3>
+        <Questionnaire
+          questions={summary.split("\n")}
+          onSubmit={handleAnswersSubmit}
+        />
+        {feedback.length > 0 && (
+          <div>
+            <h3>Feedback</h3>
+            {feedback.map((fb, index) => (
+              <p key={index}>{fb}</p>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

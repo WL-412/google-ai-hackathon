@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       temperature: 0.7, // temp value
       topK: 5 // temp value
     };
-    runPrompt(`Generate 5 questions based on the key points of the following content: ${content}`, params)
+    runPrompt(`Generate 5 questions based on the key points of the following content: ${content}. Give me questions only, no other text.`, params)
       .then(summary => {
         chrome.tabs.sendMessage(sender.tab.id, { action: 'display_summary', summary });
         console.log("Summary sent", summary);
