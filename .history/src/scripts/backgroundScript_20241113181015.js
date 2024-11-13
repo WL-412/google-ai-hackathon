@@ -3,7 +3,7 @@
 let session = null;
 
 async function initializeSession(params, articleContent) {
-  session = await ai.languageModel.create({
+  session = await chrome.aiOriginTrial.languageModel.create({
     ...params,
     systemPrompt: `You are helping a user understand and answer questions about this article: "${articleContent}".`
   });
@@ -38,8 +38,8 @@ async function reset() {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const params = {
-    temperature: 0.7, // temp value
-    topK: 5 // temp value
+    temperature: 1, // temp value
+    topK: 3 // temp value
   };
 
   if (message.action === 'summarize_page') {

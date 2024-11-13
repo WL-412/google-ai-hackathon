@@ -16,17 +16,25 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const [feedback, setFeedback] = useState<string[]>(Array(questions.length).fill(""));
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
+    // Listen for feedback from background.js
+    const handleMessage = (message: any) => {
       if (message.action === "display_feedback") {
         const { feedback: feedbackMessage, index } = message;
         setFeedback((prevFeedback) => {
           const newFeedback = [...prevFeedback];
           newFeedback[index] = feedbackMessage;
-          console.log("feedback received in the component:", feedbackMessage);
           return newFeedback;
         });
+        console.log("feedback received in the component:", feedback);
       }
-    });
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessage);
+
+    // Clean up listener when component unmounts
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
   }, []);
 
   const handleChange = (index: number, value: string) => {
@@ -43,8 +51,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     chrome.runtime.sendMessage({
       action: "validate_answer",
       question,
-      userAnswer,
-      index
+      userAnswer
     });
   };
 

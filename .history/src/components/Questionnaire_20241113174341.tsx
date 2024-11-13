@@ -22,7 +22,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
         setFeedback((prevFeedback) => {
           const newFeedback = [...prevFeedback];
           newFeedback[index] = feedbackMessage;
-          console.log("feedback received in the component:", feedbackMessage);
+          console.log("feedback received in the component:", feedback);
           return newFeedback;
         });
       }
@@ -43,8 +43,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     chrome.runtime.sendMessage({
       action: "validate_answer",
       question,
-      userAnswer,
-      index
+      userAnswer
     });
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 interface QuestionnaireProps {
   questions: string[];
@@ -15,20 +15,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<string[]>(Array(questions.length).fill(""));
 
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.action === "display_feedback") {
-        const { feedback: feedbackMessage, index } = message;
-        setFeedback((prevFeedback) => {
-          const newFeedback = [...prevFeedback];
-          newFeedback[index] = feedbackMessage;
-          console.log("feedback received in the component:", feedbackMessage);
-          return newFeedback;
-        });
-      }
-    });
-  }, []);
-
   const handleChange = (index: number, value: string) => {
     const newAnswers = [...answers];
     newAnswers[index] = value;
@@ -39,13 +25,18 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     const question = questions[index];
     const userAnswer = answers[index];
 
-    // Send the question and answer to background.js for validation
-    chrome.runtime.sendMessage({
-      action: "validate_answer",
-      question,
-      userAnswer,
-      index
-    });
+    chrome.runtime.sendMessage(
+      { action: "validate_answer", question, userAnswer },
+      (response) => {
+        const newFeedback = [...feedback];
+        newFeedback[index] = response.feedback;
+        setFeedback(newFeedback);
+      }
+    );
+  };
+
+  const handleSubmit = () => {
+    onSubmit(answers);
   };
 
   const toggleQuestion = (index: number) => {

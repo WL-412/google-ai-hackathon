@@ -3,7 +3,7 @@
 let session = null;
 
 async function initializeSession(params, articleContent) {
-  session = await ai.languageModel.create({
+  session = await chrome.aiOriginTrial.languageModel.create({
     ...params,
     systemPrompt: `You are helping a user understand and answer questions about this article: "${articleContent}".`
   });
@@ -25,7 +25,7 @@ async function runPrompt(prompt, params, articleContent = '') {
 }
 
 async function validateAnswer(question, userAnswer) {
-  const prompt = `Under the context of the above article, evaluate the answer to this question: "${question}" with the user answer: "${userAnswer}". Respond with 'Correct' if the answer is true, otherwise don't include "correct" and provide a hint starting with 'Hint: '.`;
+  const prompt = `Under the context of the article, evaluate the answer to this question: "${question}" with the user answer: "${userAnswer}". Respond with 'Correct' if the answer is correct, otherwise provide a hint starting with 'Hint: '.`;
   return runPrompt(prompt, { temperature: 0.7, topK: 5 });
 }
 

@@ -3,7 +3,7 @@
 let session = null;
 
 async function initializeSession(params, articleContent) {
-  session = await ai.languageModel.create({
+  session = await chrome.aiOriginTrial.languageModel.create({
     ...params,
     systemPrompt: `You are helping a user understand and answer questions about this article: "${articleContent}".`
   });

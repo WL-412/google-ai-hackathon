@@ -3,7 +3,7 @@
 let session = null;
 
 async function initializeSession(params, articleContent) {
-  session = await ai.languageModel.create({
+  session = await chrome.aiOriginTrial.languageModel.create({
     ...params,
     systemPrompt: `You are helping a user understand and answer questions about this article: "${articleContent}".`
   });
@@ -25,7 +25,7 @@ async function runPrompt(prompt, params, articleContent = '') {
 }
 
 async function validateAnswer(question, userAnswer) {
-  const prompt = `Under the context of the above article, evaluate the answer to this question: "${question}" with the user answer: "${userAnswer}". Respond with 'Correct' if the answer is true, otherwise don't include "correct" and provide a hint starting with 'Hint: '.`;
+  const prompt = `Evaluate the answer to this question: "${question}" with the user answer: "${userAnswer}". Respond with 'Correct' if the answer is correct, otherwise provide a hint.`;
   return runPrompt(prompt, { temperature: 0.7, topK: 5 });
 }
 
@@ -52,10 +52,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       })
       .catch(error => console.error('Error summarizing content:', error));
   } else if (message.action === 'validate_answer') {
-    const { question, userAnswer, index } = message;
+    const { question, userAnswer } = message;
     validateAnswer(question, userAnswer)
       .then(response => {
-        chrome.tabs.sendMessage(sender.tab.id, { action: 'display_feedback', feedback: response, index });
+        chrome.tabs.sendMessage(sender.tab.id, { action: 'display_feedback', feedback: response });
         console.log("Feedback sent", response);
       })
       .catch(error => console.error('Error validating answer:', error));

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 interface QuestionnaireProps {
   questions: string[];
@@ -13,21 +13,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     Array(questions.length).fill("")
   );
   const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState<string[]>(Array(questions.length).fill(""));
-
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.action === "display_feedback") {
-        const { feedback: feedbackMessage, index } = message;
-        setFeedback((prevFeedback) => {
-          const newFeedback = [...prevFeedback];
-          newFeedback[index] = feedbackMessage;
-          console.log("feedback received in the component:", feedbackMessage);
-          return newFeedback;
-        });
-      }
-    });
-  }, []);
 
   const handleChange = (index: number, value: string) => {
     const newAnswers = [...answers];
@@ -35,17 +20,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     setAnswers(newAnswers);
   };
 
-  const validateAnswer = (index: number) => {
-    const question = questions[index];
-    const userAnswer = answers[index];
-
-    // Send the question and answer to background.js for validation
-    chrome.runtime.sendMessage({
-      action: "validate_answer",
-      question,
-      userAnswer,
-      index
-    });
+  const handleSubmit = () => {
+    onSubmit(answers);
   };
 
   const toggleQuestion = (index: number) => {
@@ -99,8 +75,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 }}
               />
               <button style={{ marginRight: "10px" }}>Highlight Pen</button>
-              <button onClick={() => validateAnswer(index)} style={{ marginRight: "10px" }}>Submit</button>
-              {feedback[index] && <p style={{ color: "blue" }}>{feedback[index]}</p>}
+              <button>Submit</button>
             </div>
           )}
         </div>
