@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'summarize_page') {
     console.log("Message received");
     const content = message.content;
-    runPrompt(`Generate 5 questions based on the key points of the article. Give me questions only, no other text.`, params, content)
+    runPrompt(`Generate 5 questions and answers based on the key points of the article. Give me questions only, no other text. The answer is an original word that can be found in the article.`, params, content)
       .then(summary => {
         chrome.tabs.sendMessage(sender.tab.id, { action: 'display_summary', summary });
         console.log("Summary sent", summary);

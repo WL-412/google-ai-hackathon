@@ -25,8 +25,14 @@ async function runPrompt(prompt, params, articleContent = '') {
 }
 
 async function validateAnswer(question, userAnswer) {
-  const prompt = `Under the context of the above article, evaluate the answer to this question: "${question}" with the user answer: "${userAnswer}". Respond with only the word 'Correct' if the answer is basically correct, otherwise don't include "correct" and provide a hint starting with 'Hint: '.`;
-  return runPrompt(prompt, { temperature: 0.7, topK: 5 });
+  const prompt = `
+  Score the accuracy of the user’s answer to the question: "${question}"
+  given the context above.
+  User answer: "${userAnswer}"
+  Return a score from 0 to 20 with a hint.
+  The response should be in the form of {score} hint: {hint} with no other text.
+  `;
+  return runPrompt(prompt, { temperature: 0.7, topK: 2 });
 }
 
 async function reset() {
