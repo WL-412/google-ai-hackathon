@@ -54,24 +54,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log("Summary sent", summary);
         // Parse question/answer pairs
         const questionAnswerPairs = summary.split("\n\n").map(block => {
-          // Split each block into lines
-          const lines = block.split("\n").map((line) => line.trim());
-
-          // Safely access question and answer lines
-          const questionLine = lines.find((line) => line.startsWith("question:"));
-          const answerLine = lines.find((line) => line.startsWith("answer:"));
-
-          // Ensure both question and answer exist before processing
-          if (questionLine && answerLine) {
-            const question = questionLine.replace(/^question:\s*/i, "").trim();
-            const answer = answerLine.replace(/^answer:\s*/i, "").trim();
-            return { question, answer };
-          }
-
-          // Skip blocks that don't have both question and answer
-          console.warn("Skipped block due to missing question or answer:", block);
-          return null;
-        }).filter((pair) => pair !== null);;
+          const [questionLine, answerLine] = block.split("\n").map(line => line.trim());
+          const question = questionLine.replace(/^question:\s*/i, "").trim();
+          const answer = answerLine.replace(/^answer:\s*/i, "").trim();
+          return { question, answer };
+        });
 
         // Store in chrome.storage
         chrome.storage.local.set({ questionAnswerPairs }, () => {

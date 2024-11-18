@@ -51,32 +51,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     runPrompt(`Generate 5 questions and answers based on the key points of the article. 
       Structure the response like this "question: {questions} answer: {answer}" no other text`, params, content)
       .then(summary => {
+        chrome.tabs.sendMessage(sender.tab.id, { action: 'display_summary', summary });
         console.log("Summary sent", summary);
-        // Parse question/answer pairs
-        const questionAnswerPairs = summary.split("\n\n").map(block => {
-          // Split each block into lines
-          const lines = block.split("\n").map((line) => line.trim());
-
-          // Safely access question and answer lines
-          const questionLine = lines.find((line) => line.startsWith("question:"));
-          const answerLine = lines.find((line) => line.startsWith("answer:"));
-
-          // Ensure both question and answer exist before processing
-          if (questionLine && answerLine) {
-            const question = questionLine.replace(/^question:\s*/i, "").trim();
-            const answer = answerLine.replace(/^answer:\s*/i, "").trim();
-            return { question, answer };
-          }
-
-          // Skip blocks that don't have both question and answer
-          console.warn("Skipped block due to missing question or answer:", block);
-          return null;
-        }).filter((pair) => pair !== null);;
-
-        // Store in chrome.storage
-        chrome.storage.local.set({ questionAnswerPairs }, () => {
-          console.log("Questions and answers stored:", questionAnswerPairs);
-        });
       })
       .catch(error => console.error('Error summarizing content:', error));
   } else if (message.action === 'validate_answer') {
