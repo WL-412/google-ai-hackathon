@@ -28,7 +28,7 @@ async function validateAnswer(question, userAnswer) {
   const prompt = `Under the context of the above article, score the answer to this question: "${question}" 
   with the user answer: "${userAnswer}". 
   Respond with a score between 0 and 20 based on the correctness of the answer. 
-  Return in this format: "Score is: "`;
+  Format your response as: "Score:.`;
   return runPrompt(prompt, { temperature: 0.7, topK: 5 });
 }
 
