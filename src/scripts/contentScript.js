@@ -10,7 +10,7 @@ if (!document.getElementById('floating-sidebar-root')) {
 
 // Extract text content from <p> tags
 function extractPageContent() {
-  const paragraphs = document.querySelectorAll('p');
+  const paragraphs = document.querySelectorAll('article p');
   let content = '';
   paragraphs.forEach((p) => {
     content += p.innerText + '\n';
@@ -19,4 +19,10 @@ function extractPageContent() {
   return content;
 }
 
-chrome.runtime.sendMessage({ action: 'summarize_page', content: extractPageContent() });
+// Listen for messages from the sidebar
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'extract_content') {
+    const content = extractPageContent();
+    sendResponse({ content });
+  }
+});

@@ -45,47 +45,83 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     topK: 5 // temp value
   };
 
-  if (message.action === 'summarize_page') {
-    console.log("Message received");
-    const content = message.content;
-    runPrompt(`Generate 5 questions and answers based on the key points of the article. 
-      Structure the response like this "question: {questions} answer: {answer}" no other text`, params, content)
-      .then(summary => {
-        console.log("Summary sent", summary);
-        // Parse question/answer pairs
-        const questionAnswerPairs = summary.split("\n\n").map(block => {
-          // Split each block into lines
-          const lines = block.split("\n").map((line) => line.trim());
-
-          // Safely access question and answer lines
-          const questionLine = lines.find((line) => line.startsWith("question:"));
-          const answerLine = lines.find((line) => line.startsWith("answer:"));
-
-          // Ensure both question and answer exist before processing
-          if (questionLine && answerLine) {
-            const question = questionLine.replace(/^question:\s*/i, "").trim();
-            const answer = answerLine.replace(/^answer:\s*/i, "").trim();
-            return { question, answer };
+  if (message.action === "get_active_tab") {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs && tabs.length > 0) {
+        sendResponse({ tabId: tabs[0].id });
+      } else {
+        sendResponse({ error: "No active tab found" });
+      }
+    });
+    return true; 
+  } else if (message.action === "extract_content") {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.id) {
+        chrome.tabs.sendMessage(
+          tabs[0].id,
+          { action: "extract_content" },
+          (response) => {
+            sendResponse(response);
           }
+        );
+      } else {
+        sendResponse({ error: "No active tab found" });
+      }
+    });
+    return true;
+  } else if (message.action === "summarize_page") {
+    const content = message.content;
 
-          // Skip blocks that don't have both question and answer
-          console.warn("Skipped block due to missing question or answer:", block);
-          return null;
-        }).filter((pair) => pair !== null);;
+    // Reset the session to ensure it starts fresh for new content
+    reset().then(() => {
+      runPrompt(
+        `Generate 5 questions and answers based on the key points of the article. 
+        Structure the response like this "question: {questions} answer: {answer}" no other text or formatting.`,
+        params,
+        content
+      )
+        .then((summary) => {
+          const questionAnswerPairs = summary
+            .split("\n\n")
+            .map((block) => {
+              const lines = block.split("\n").map((line) => line.trim());
+              const questionLine = lines.find((line) =>
+                line.startsWith("question:")
+              );
+              const answerLine = lines.find((line) =>
+                line.startsWith("answer:")
+              );
 
-        // Store in chrome.storage
-        chrome.storage.local.set({ questionAnswerPairs }, () => {
-          console.log("Questions and answers stored:", questionAnswerPairs);
+              if (questionLine && answerLine) {
+                const question = questionLine.replace(/^question:\s*/i, "").trim();
+                const answer = answerLine.replace(/^answer:\s*/i, "").trim();
+                return { question, answer };
+              }
+              return null;
+            })
+            .filter((pair) => pair !== null);
+
+          chrome.storage.local.set({ questionAnswerPairs }, () => {
+            console.log("Question answer pairs stored", questionAnswerPairs);
+            sendResponse({ success: true, questionAnswerPairs });
+          });
+        })
+        .catch((error) => {
+          console.error("Error summarizing content:", error);
+          sendResponse({ success: false, error });
         });
-      })
-      .catch(error => console.error('Error summarizing content:', error));
-  } else if (message.action === 'validate_answer') {
-    const { question, userAnswer, index } = message;
+    });
+    return true;
+  } else if (message.action === "validate_answer") {
+    const { question, userAnswer } = message;
     validateAnswer(question, userAnswer)
-      .then(response => {
-        chrome.tabs.sendMessage(sender.tab.id, { action: 'display_feedback', feedback: response, index });
-        console.log("Feedback sent", response);
+      .then((response) => {
+        sendResponse({ success: true, feedback: response });
       })
-      .catch(error => console.error('Error validating answer:', error));
+      .catch((error) => {
+        console.error("Error validating answer:", error);
+        sendResponse({ success: false, error });
+      });
+    return true; 
   }
 });

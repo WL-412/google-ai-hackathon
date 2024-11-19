@@ -1,6 +1,5 @@
 // Sidebar.tsx
-import React, { useState } from "react";
-import Questionnaire from "./Questionnaire";
+import React, { useState, useEffect } from "react";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -10,17 +9,48 @@ type SidebarProps = {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
   const [feedback, setFeedback] = useState<string[]>([]);
+  const [questionAnswerPairs, setQuestionAnswerPairs] = useState<
+    { question: string; answer: string }[]
+  >([]);
 
-  const handleAnswersSubmit = (answers: string[]) => {
-    // Send the answers to the backend for evaluation
-    chrome.runtime.sendMessage(
-      { action: "evaluate_answers", questions: summary, answers },
-      (response) => {
-        if (response && response.feedback) {
-          setFeedback(response.feedback);
-        }
+  useEffect(() => {
+    // Retrieve questionAnswerPairs from chrome storage
+    chrome.storage.local.get("questionAnswerPairs", (result) => {
+      if (result.questionAnswerPairs) {
+        setQuestionAnswerPairs(result.questionAnswerPairs);
       }
-    );
+    });
+  }, []);
+
+  const handleGenerateQuestions = () => {
+    setQuestionAnswerPairs([]);
+
+    chrome.runtime.sendMessage({ action: "get_active_tab" }, (response) => {
+      if (response && response.tabId) {
+        chrome.runtime.sendMessage(
+          { action: "extract_content", tabId: response.tabId },
+          (contentResponse) => {
+            if (contentResponse && contentResponse.content) {
+              chrome.runtime.sendMessage(
+                { action: "summarize_page", content: contentResponse.content },
+                (summarizeResponse) => {
+                  if (
+                    summarizeResponse &&
+                    summarizeResponse.questionAnswerPairs
+                  ) {
+                    setQuestionAnswerPairs(
+                      summarizeResponse.questionAnswerPairs
+                    );
+                  }
+                }
+              );
+            }
+          }
+        );
+      } else {
+        console.error("Failed to get active tab:", chrome.runtime.lastError);
+      }
+    });
   };
 
   return (
@@ -58,10 +88,32 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
         }}
       >
         <h3>LET'S DO THIS</h3>
-        <Questionnaire
-          questions={summary.split("\n")}
-          onSubmit={handleAnswersSubmit}
-        />
+        <button
+          onClick={handleGenerateQuestions}
+          style={{
+            marginBottom: "20px",
+            padding: "10px",
+            backgroundColor: "#007bff",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Generate Questions
+        </button>
+        {questionAnswerPairs.length > 0 && (
+          <div>
+            {questionAnswerPairs.map((pair, index) => (
+              <div key={index} style={{ marginBottom: "20px" }}>
+                <h4>Question {index + 1}:</h4>
+                <p>{pair.question}</p>
+                <h4>Answer:</h4>
+                <p>{pair.answer}</p>
+              </div>
+            ))}
+          </div>
+        )}
         {feedback.length > 0 && (
           <div>
             <h3>Feedback</h3>
