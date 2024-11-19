@@ -27,8 +27,8 @@ async function runPrompt(prompt, params, articleContent = '') {
 async function validateAnswer(question, userAnswer) {
   const prompt = `Under the context of the above article, score the answer to this question: "${question}" 
   with the user answer: "${userAnswer}". 
-  Respond with a score between 0 and 20 based on the correctness of the answer. 
-  Return in this format: "Score is: "`;
+  Respond with a score between 0 and 10 based on the correctness of the answer. 
+  Return in this format: "Your Score: {score}/10"`;
   return runPrompt(prompt, { temperature: 0.7, topK: 5 });
 }
 
@@ -113,10 +113,21 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     });
     return true;
   } else if (message.action === "validate_answer") {
-    const { question, userAnswer } = message;
+    const { question, userAnswer, index } = message;
     validateAnswer(question, userAnswer)
       .then((response) => {
-        sendResponse({ success: true, feedback: response });
+
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs[0]?.id) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+              action: "display_feedback",
+              feedback: response,
+              index,
+            });
+          }
+        });
+
+        sendResponse({ success: true });
       })
       .catch((error) => {
         console.error("Error validating answer:", error);

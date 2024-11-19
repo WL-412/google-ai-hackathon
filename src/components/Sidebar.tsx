@@ -1,5 +1,6 @@
 // Sidebar.tsx
 import React, { useState, useEffect } from "react";
+import Questionnaire from "./Questionnaire";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -8,10 +9,10 @@ type SidebarProps = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
-  const [feedback, setFeedback] = useState<string[]>([]);
   const [questionAnswerPairs, setQuestionAnswerPairs] = useState<
     { question: string; answer: string }[]
   >([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Retrieve questionAnswerPairs from chrome storage
@@ -24,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
 
   const handleGenerateQuestions = () => {
     setQuestionAnswerPairs([]);
+    setIsLoading(true);
 
     chrome.runtime.sendMessage({ action: "get_active_tab" }, (response) => {
       if (response && response.tabId) {
@@ -34,6 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
               chrome.runtime.sendMessage(
                 { action: "summarize_page", content: contentResponse.content },
                 (summarizeResponse) => {
+                  setIsLoading(false);
                   if (
                     summarizeResponse &&
                     summarizeResponse.questionAnswerPairs
@@ -44,11 +47,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
                   }
                 }
               );
+            } else {
+              setIsLoading(false);
             }
           }
         );
       } else {
         console.error("Failed to get active tab:", chrome.runtime.lastError);
+        setIsLoading(false);
       }
     });
   };
@@ -102,24 +108,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
         >
           Generate Questions
         </button>
-        {questionAnswerPairs.length > 0 && (
+        {isLoading && <p>Generating...</p>}
+        {!isLoading && questionAnswerPairs.length > 0 && (
           <div>
-            {questionAnswerPairs.map((pair, index) => (
-              <div key={index} style={{ marginBottom: "20px" }}>
-                <h4>Question {index + 1}:</h4>
-                <p>{pair.question}</p>
-                <h4>Answer:</h4>
-                <p>{pair.answer}</p>
-              </div>
-            ))}
-          </div>
-        )}
-        {feedback.length > 0 && (
-          <div>
-            <h3>Feedback</h3>
-            {feedback.map((fb, index) => (
-              <p key={index}>{fb}</p>
-            ))}
+            <Questionnaire questionAnswerPairs={questionAnswerPairs} />
           </div>
         )}
       </div>
