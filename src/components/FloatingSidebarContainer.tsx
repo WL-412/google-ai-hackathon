@@ -45,7 +45,12 @@ const FloatingSidebarContainer: React.FC = () => {
 
   return (
     <div
-      style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 2147483647 }}
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "20px",
+        zIndex: 2147483647,
+      }}
     >
       <Draggable
         onStart={handleDragStart}
@@ -61,7 +66,7 @@ const FloatingSidebarContainer: React.FC = () => {
           style={{
             position: "absolute",
             left: `${position.x - 350}px`,
-            top: `${position.y - 700}px`,
+            top: `${position.y - 750}px`,
           }}
         >
           <Sidebar

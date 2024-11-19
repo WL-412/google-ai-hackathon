@@ -1,6 +1,7 @@
-// Sidebar.tsx
 import React, { useState, useEffect } from "react";
 import Questionnaire from "./Questionnaire";
+import "../styles/Sidebar.css"; // Import the CSS file
+import CloseIcon from "@mui/icons-material/Close";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -15,7 +16,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Retrieve questionAnswerPairs from chrome storage
     chrome.storage.local.get("questionAnswerPairs", (result) => {
       if (result.questionAnswerPairs) {
         setQuestionAnswerPairs(result.questionAnswerPairs);
@@ -60,55 +60,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
   };
 
   return (
-    <div
-      style={{
-        width: "350px",
-        height: "600px",
-        backgroundColor: "#ffffff",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        boxShadow: "rgba(0, 0, 0, 0.5) 0px 0px 15px",
-        zIndex: 2147483647,
-        display: isOpen ? "block" : "none",
-        overflow: "hidden",
-        position: "relative",
-      }}
-    >
-      <button
-        onClick={onClose}
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          zIndex: 2147483647,
-          cursor: "pointer",
-        }}
-      >
-        Close
+    <div className={`extension-sidebar ${isOpen ? "open" : ""}`}>
+      <button className="extension-sidebar-close" onClick={onClose}>
+        <CloseIcon />
       </button>
-      <div
-        style={{
-          padding: "10px",
-          overflowY: "auto",
-          height: "calc(100% - 40px)",
-        }}
-      >
+      <div className="extension-sidebar-content">
         <h3>LET'S DO THIS</h3>
         <button
+          className="extension-generate-button"
           onClick={handleGenerateQuestions}
-          style={{
-            marginBottom: "20px",
-            padding: "10px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
         >
           Generate Questions
         </button>
-        {isLoading && <p>Generating...</p>}
+        {isLoading && <p className="extension-loading-text">Generating...</p>}
         {!isLoading && questionAnswerPairs.length > 0 && (
           <div>
             <Questionnaire questionAnswerPairs={questionAnswerPairs} />

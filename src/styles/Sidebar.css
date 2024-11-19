@@ -1,0 +1,63 @@
+.extension-sidebar {
+    width: 350px;
+    height: 750px;
+    background-color: #EBEBEB;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 15px;
+    z-index: 2147483647;
+    display: none;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.extension-sidebar.open {
+    display: block;
+}
+
+.extension-sidebar-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2147483647;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 14px;
+}
+
+.extension-sidebar-content {
+    padding: 10px;
+    overflow-y: auto;
+    height: calc(100% - 40px);
+}
+
+.extension-sidebar-content h3 {
+    font-size: 34px;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.extension-generate-button {
+    width: 252px;
+    height: 59px;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.extension-loading-text {
+    font-size: 14px;
+    color: #666;
+}

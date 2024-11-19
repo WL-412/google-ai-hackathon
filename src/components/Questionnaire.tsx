@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "../styles/Questionnaire.css";
 
 interface QuestionAnswerPair {
   question: string;
@@ -48,7 +49,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     const question = questionAnswerPairs[index].question;
     const userAnswer = answers[index];
 
-    // Send the question and answer to background.js for validation
     chrome.runtime.sendMessage({
       action: "validate_answer",
       question,
@@ -56,7 +56,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
       index,
     });
 
-    // Mark the question as submitted
     setSubmitted((prevSubmitted) => {
       const newSubmitted = [...prevSubmitted];
       newSubmitted[index] = true;
@@ -71,15 +70,14 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   return (
     <div>
       {questionAnswerPairs.map((pair, index) => (
-        <div key={index} style={{ marginBottom: "20px" }}>
+        <div key={index} className="extension-question-container">
           <div
             onClick={() => toggleQuestion(index)}
-            style={{ cursor: "pointer" }}
+            className="extension-question-header"
           >
             <p>
-              <strong>Question {index + 1}:</strong>
+              <strong>Question {index + 1}:</strong> {pair.question}
             </p>
-            {pair.question}
           </div>
           {activeQuestion === index && (
             <div>
@@ -88,30 +86,20 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 value={answers[index]}
                 onChange={(e) => handleChange(index, e.target.value)}
                 placeholder="Type your answer here"
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  marginTop: "10px",
-                  marginBottom: "10px",
-                  boxSizing: "border-box",
-                }}
+                className="extension-input-box"
               />
-              <button style={{ marginRight: "10px", cursor: "pointer" }}>
-                Highlight Pen
-              </button>
+              <button className="extension-button">Highlight Pen</button>
               <button
                 onClick={() => validateAnswer(index)}
-                style={{ marginRight: "10px", cursor: "pointer" }}
+                className="extension-button"
               >
                 Submit
               </button>
               {feedback[index]?.trim() && (
-                <p style={{ color: "blue", marginTop: "10px" }}>
-                  {feedback[index]}
-                </p>
+                <p className="extension-feedback">{feedback[index]}</p>
               )}
               {submitted[index] && (
-                <p style={{ color: "green", marginTop: "10px" }}>
+                <p className="extension-correct-answer">
                   <strong>Correct Answer:</strong> {pair.answer}
                 </p>
               )}
