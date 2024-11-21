@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Questionnaire from "./Questionnaire";
-import "../styles/Sidebar.css"; // Import the CSS file
+import HistoryLibrary from "./HistoryLibrary";
+import "../styles/Sidebar.css";
 import CloseIcon from "@mui/icons-material/Close";
 
 type SidebarProps = {
@@ -14,6 +15,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
     { question: string; answer: string }[]
   >([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [view, setView] = useState<"questions" | "history">("questions");
 
   useEffect(() => {
     chrome.storage.local.get("questionAnswerPairs", (result) => {
@@ -66,18 +68,41 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
       </button>
       <div className="extension-sidebar-content">
         <h3>LET'S DO THIS</h3>
-        <button
-          className="extension-generate-button"
-          onClick={handleGenerateQuestions}
-        >
-          Generate Questions
-        </button>
-        {isLoading && <p className="extension-loading-text">Generating...</p>}
-        {!isLoading && questionAnswerPairs.length > 0 && (
+        <div className="extension-view-toggle">
+          <button
+            className={`extension-toggle-button ${
+              view === "questions" ? "active" : ""
+            }`}
+            onClick={() => setView("questions")}
+          >
+            Questions
+          </button>
+          <button
+            className={`extension-toggle-button ${
+              view === "history" ? "active" : ""
+            }`}
+            onClick={() => setView("history")}
+          >
+            History
+          </button>
+        </div>
+        {view === "questions" && (
           <div>
-            <Questionnaire questionAnswerPairs={questionAnswerPairs} />
+            <button
+              className="extension-generate-button"
+              onClick={handleGenerateQuestions}
+            >
+              Generate Questions
+            </button>
+            {isLoading && (
+              <p className="extension-loading-text">Generating...</p>
+            )}
+            {!isLoading && questionAnswerPairs.length > 0 && (
+              <Questionnaire questionAnswerPairs={questionAnswerPairs} />
+            )}
           </div>
         )}
+        {view === "history" && <HistoryLibrary />}
       </div>
     </div>
   );
