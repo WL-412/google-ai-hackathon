@@ -194,7 +194,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     });
     return true;
-  } else if (message.action === "start_highlight_mode") {
+  } else if (message.action === "start_highligh_mode") {
     // Find the active tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]?.id) {

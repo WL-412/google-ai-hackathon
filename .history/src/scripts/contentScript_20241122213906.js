@@ -27,8 +27,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const content = extractPageContent();
     sendResponse({ content });
   } else if (message.action === "start_highlight_mode") {
-    startHighlightMode();
-    sendResponse({ status: "Highlight mode started" });
+    // Simulate async processing or start highlight logic
+    setTimeout(() => {
+      sendResponse({ status: "Highlight mode started successfully!" });
+    }, 500);
+
+    return true; // Keep the port open for async response
+
   }
 });
 

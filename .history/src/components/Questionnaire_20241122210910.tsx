@@ -48,11 +48,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const handleHighlightPen = (index: number) => {
     chrome.runtime.sendMessage({ action: "start_highlight_mode" }, (response) => {
       if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError.message);
-      } else if (response) {
-        console.log("Response from content script:", response.status);
+        console.error("Runtime error:", chrome.runtime.lastError.message);
+      } else if (response && response.status) {
+        console.log(response.status);
       } else {
-        console.warn("No response received from content script.");
+        console.warn("No response received.");
       }
     });
 

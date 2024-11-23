@@ -39,23 +39,12 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     });
   }, []);
 
-  const handleChange = (index: number, value: string) => {
-    const newAnswers = [...answers];
-    newAnswers[index] = value;
-    setAnswers(newAnswers);
-  };
-
   const handleHighlightPen = (index: number) => {
+    setActiveQuestion(index); // Ensure the correct question is active
     chrome.runtime.sendMessage({ action: "start_highlight_mode" }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError.message);
-      } else if (response) {
-        console.log("Response from content script:", response.status);
-      } else {
-        console.warn("No response received from content script.");
-      }
+      console.log("sent message and get response.\n");
+      console.log(response.status);
     });
-
 
     chrome.runtime.onMessage.addListener((message) => {
       if (message.action === "text_highlighted") {
@@ -69,6 +58,13 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
         });
       }
     });
+  };
+
+
+  const handleChange = (index: number, value: string) => {
+    const newAnswers = [...answers];
+    newAnswers[index] = value;
+    setAnswers(newAnswers);
   };
 
   const validateAnswer = (index: number) => {
@@ -115,7 +111,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 className="extension-input-box"
               />
               <button
-                className="extension-button" onClick={() => handleHighlightPen(index)}>Highlight Pen</button>
+                className="extension-button"
+                onClick={() => handleHighlightPen(index)}
+              >
+                Highlight Pen
+              </button>
               <button
                 onClick={() => validateAnswer(index)}
                 className="extension-button"

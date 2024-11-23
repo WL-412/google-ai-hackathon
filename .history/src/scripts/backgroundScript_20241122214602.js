@@ -203,7 +203,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           if (chrome.runtime.lastError) {
             console.error("Error forwarding message:", chrome.runtime.lastError.message);
           } else {
-            sendResponse(response); // Relay response back to the React component
+            sendResponse("hello"); // Relay response back to the React component
           }
         });
       }

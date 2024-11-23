@@ -21,16 +21,12 @@ function extractPageContent() {
 
 // Listen for messages from the sidebar
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("Message received in content script:", message);
-
-  if (message.action === "extract_content") {
+  if (message.action === 'extract_content') {
     const content = extractPageContent();
     sendResponse({ content });
-  } else if (message.action === "start_highlight_mode") {
-    startHighlightMode();
-    sendResponse({ status: "Highlight mode started" });
   }
 });
+
 
 
 let highlightModeActive = false;
@@ -69,3 +65,11 @@ function handleHighlight() {
     stopHighlightMode();
   }
 }
+
+// Listen for messages from the extension
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'start_highlight_mode') {
+    startHighlightMode();
+    sendResponse({ status: 'Highlight mode started' });
+  }
+});

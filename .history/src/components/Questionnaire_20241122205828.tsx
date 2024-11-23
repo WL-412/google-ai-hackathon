@@ -45,32 +45,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     setAnswers(newAnswers);
   };
 
-  const handleHighlightPen = (index: number) => {
-    chrome.runtime.sendMessage({ action: "start_highlight_mode" }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError.message);
-      } else if (response) {
-        console.log("Response from content script:", response.status);
-      } else {
-        console.warn("No response received from content script.");
-      }
-    });
-
-
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.action === "text_highlighted") {
-        console.log("Received highlighted text:", message.text);
-
-        // Update the answer for the corresponding question
-        setAnswers((prevAnswers) => {
-          const newAnswers = [...prevAnswers];
-          newAnswers[index] = message.text;
-          return newAnswers;
-        });
-      }
-    });
-  };
-
   const validateAnswer = (index: number) => {
     const question = questionAnswerPairs[index].question;
     const userAnswer = answers[index];
@@ -114,8 +88,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 placeholder="Type your answer here"
                 className="extension-input-box"
               />
-              <button
-                className="extension-button" onClick={() => handleHighlightPen(index)}>Highlight Pen</button>
+              <button className="extension-button">Highlight Pen</button>
               <button
                 onClick={() => validateAnswer(index)}
                 className="extension-button"

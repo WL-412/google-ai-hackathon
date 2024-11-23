@@ -46,16 +46,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   };
 
   const handleHighlightPen = (index: number) => {
+    setActiveQuestion(index); // Ensure the correct question is active
     chrome.runtime.sendMessage({ action: "start_highlight_mode" }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError.message);
-      } else if (response) {
-        console.log("Response from content script:", response.status);
-      } else {
-        console.warn("No response received from content script.");
-      }
+      console.log(response.status);
     });
-
 
     chrome.runtime.onMessage.addListener((message) => {
       if (message.action === "text_highlighted") {

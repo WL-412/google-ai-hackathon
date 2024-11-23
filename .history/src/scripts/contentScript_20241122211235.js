@@ -27,8 +27,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const content = extractPageContent();
     sendResponse({ content });
   } else if (message.action === "start_highlight_mode") {
-    startHighlightMode();
-    sendResponse({ status: "Highlight mode started" });
+    // Simulating an asynchronous task
+    setTimeout(() => {
+      startHighlightMode();
+      sendResponse({ status: 'Highlight mode started' });
+    }, 1000);
+
+    // Return true to keep the message port open
+    return true;
   }
 });
 
