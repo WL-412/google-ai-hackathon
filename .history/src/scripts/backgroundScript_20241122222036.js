@@ -211,6 +211,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       action: "text_highlighted",
       text: message.text,
     });
-    return true;
   }
 });

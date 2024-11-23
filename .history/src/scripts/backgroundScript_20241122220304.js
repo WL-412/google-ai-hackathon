@@ -11,7 +11,7 @@ async function initializeSession(params, articleContent) {
 
 async function runPrompt(prompt, params, articleContent = '') {
   try {
-    // If session doesn't exist, initialize it with article context 
+    // If session doesn't exist, initialize it with article context
     if (!session) {
       await initializeSession(params, articleContent);
     }
@@ -200,17 +200,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (tabs[0]?.id) {
         // Send message to content script in the active tab
         chrome.tabs.sendMessage(tabs[0].id, message, (response) => {
-          sendResponse(response);
+          console.log(response);
+          sendResponse(response); // Relay response back to the React component
+
         });
       }
     });
-    return true;
-  } else if (message.action === "text_highlighted") {
-    // Relay the text back to the React component
-    chrome.runtime.sendMessage({
-      action: "text_highlighted",
-      text: message.text,
-    });
-    return true;
+
+    return true; // Keep the port open for asynchronous response
   }
 });

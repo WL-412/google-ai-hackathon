@@ -25,17 +25,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   );
 
   useEffect(() => {
-    const handleMessage = (message: any) => {
-      if (message.action === "text_highlighted") {
-        console.log("Received highlighted text:", message.text);
-
-        setAnswers((prevAnswers) => {
-          const newAnswers = [...prevAnswers];
-          if (activeQuestion !== null) newAnswers[activeQuestion] = message.text;
-          return newAnswers;
-        });
-      }
-
+    chrome.runtime.onMessage.addListener((message) => {
       if (message.action === "display_feedback") {
         console.log("Feedback message received in Questionnaire:", message);
         const { feedback: feedbackMessage, index } = message;
@@ -46,17 +36,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
           return newFeedback;
         });
       }
-    };
-
-    // Attach the listener
-    chrome.runtime.onMessage.addListener(handleMessage);
-
-    // Cleanup listener on unmount
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessage);
-    };
+    });
   }, []);
-
 
   const handleChange = (index: number, value: string) => {
     const newAnswers = [...answers];
@@ -65,14 +46,28 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   };
 
   const handleHighlightPen = (index: number) => {
+    setActiveQuestion(index); // Set the currently active question
+
+    // Start highlight mode in the content script
     chrome.runtime.sendMessage({ action: "start_highlight_mode" }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError.message);
-      } else if (response) {
-        console.log("Response from content script:", response.status);
-      } else {
-        console.warn("No response received from content script.");
-      }
+      console.log(response.status);
+
+      // Add a listener for the highlighted text
+      chrome.runtime.onMessage.addListener(function handleMessage(message) {
+        if (message.action === "text_highlighted") {
+          console.log("Received highlighted text:", message.text);
+
+          // Update the answer for the corresponding question
+          setAnswers((prevAnswers) => {
+            const newAnswers = [...prevAnswers];
+            newAnswers[index] = message.text;
+            return newAnswers;
+          });
+
+          // Cleanup: Remove this listener after receiving the message
+          chrome.runtime.onMessage.removeListener(handleMessage);
+        }
+      });
     });
   };
 

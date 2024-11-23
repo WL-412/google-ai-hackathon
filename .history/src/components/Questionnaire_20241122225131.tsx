@@ -55,7 +55,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessage);
     };
-  }, []);
+  }, [activeQuestion]);
 
 
   const handleChange = (index: number, value: string) => {

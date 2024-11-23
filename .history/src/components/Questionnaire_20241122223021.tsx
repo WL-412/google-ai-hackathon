@@ -25,17 +25,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   );
 
   useEffect(() => {
-    const handleMessage = (message: any) => {
-      if (message.action === "text_highlighted") {
-        console.log("Received highlighted text:", message.text);
-
-        setAnswers((prevAnswers) => {
-          const newAnswers = [...prevAnswers];
-          if (activeQuestion !== null) newAnswers[activeQuestion] = message.text;
-          return newAnswers;
-        });
-      }
-
+    chrome.runtime.onMessage.addListener((message) => {
       if (message.action === "display_feedback") {
         console.log("Feedback message received in Questionnaire:", message);
         const { feedback: feedbackMessage, index } = message;
@@ -46,17 +36,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
           return newFeedback;
         });
       }
-    };
-
-    // Attach the listener
-    chrome.runtime.onMessage.addListener(handleMessage);
-
-    // Cleanup listener on unmount
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessage);
-    };
+    });
   }, []);
-
 
   const handleChange = (index: number, value: string) => {
     const newAnswers = [...answers];
@@ -74,7 +55,33 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
         console.warn("No response received from content script.");
       }
     });
+
   };
+
+  useEffect(() => {
+    const handleMessage = (message: any) => {
+      if (message.action === "text_highlighted") {
+        console.log("Received highlighted text:", message.text);
+
+        // Update the answer for the active question
+        if (activeQuestion !== null) {
+          setAnswers((prevAnswers) => {
+            const newAnswers = [...prevAnswers];
+            newAnswers[activeQuestion] = message.text;
+            return newAnswers;
+          });
+        }
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessage);
+
+    // Cleanup listener on component unmount
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
+  }, [activeQuestion]);
+
 
   const validateAnswer = (index: number) => {
     const question = questionAnswerPairs[index].question;

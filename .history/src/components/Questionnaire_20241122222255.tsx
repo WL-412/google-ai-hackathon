@@ -25,17 +25,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   );
 
   useEffect(() => {
-    const handleMessage = (message: any) => {
-      if (message.action === "text_highlighted") {
-        console.log("Received highlighted text:", message.text);
-
-        setAnswers((prevAnswers) => {
-          const newAnswers = [...prevAnswers];
-          if (activeQuestion !== null) newAnswers[activeQuestion] = message.text;
-          return newAnswers;
-        });
-      }
-
+    chrome.runtime.onMessage.addListener((message) => {
       if (message.action === "display_feedback") {
         console.log("Feedback message received in Questionnaire:", message);
         const { feedback: feedbackMessage, index } = message;
@@ -46,17 +36,8 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
           return newFeedback;
         });
       }
-    };
-
-    // Attach the listener
-    chrome.runtime.onMessage.addListener(handleMessage);
-
-    // Cleanup listener on unmount
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessage);
-    };
+    });
   }, []);
-
 
   const handleChange = (index: number, value: string) => {
     const newAnswers = [...answers];
@@ -72,6 +53,21 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
         console.log("Response from content script:", response.status);
       } else {
         console.warn("No response received from content script.");
+      }
+    });
+
+
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message.action === "text_highlighted") {
+        console.log("Received highlighted text:", message.text);
+
+        // Update the answer for the corresponding question
+        setAnswers((prevAnswers) => {
+          const newAnswers = [...prevAnswers];
+          newAnswers[index] = message.text;
+          console.log("new answer set");
+          return newAnswers;
+        });
       }
     });
   };

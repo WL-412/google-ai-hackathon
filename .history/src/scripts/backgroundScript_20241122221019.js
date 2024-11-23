@@ -205,12 +205,5 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     });
     return true;
-  } else if (message.action === "text_highlighted") {
-    // Relay the text back to the React component
-    chrome.runtime.sendMessage({
-      action: "text_highlighted",
-      text: message.text,
-    });
-    return true;
   }
 });
