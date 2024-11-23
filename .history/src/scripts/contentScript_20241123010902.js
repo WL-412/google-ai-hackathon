@@ -44,15 +44,13 @@ let currentIndex = null; // Track the active index globally
 
 function startHighlightMode(index) {
   highlightModeActive = true;
-  currentIndex = index; // Update the active index
-  console.log("Highlight mode started for index:", index);
-  document.addEventListener('mouseup', handleHighlight);
+  console.log("Index executed:", index);
+  document.addEventListener('mouseup', () => handleHighlight(index));
   console.log("Highlight mode activated.");
 }
 
 function stopHighlightMode() {
   highlightModeActive = false;
-  currentIndex = null; // Clear the active index
   document.removeEventListener('mouseup', handleHighlight);
   console.log("Highlight mode deactivated.");
 }
@@ -72,7 +70,7 @@ function handleHighlight(index) {
     range.insertNode(highlightSpan);
 
     // Send the selected text back to the extension
-    chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index: currentIndex });
+    chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index: index });
     stopHighlightMode();
   }
 }

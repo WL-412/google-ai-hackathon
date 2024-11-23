@@ -65,7 +65,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   };
 
   const handleHighlightPen = (index: number) => {
-    console.log("current highlight index is:", index);
     chrome.runtime.sendMessage({ action: "start_highlight_mode", index }, (response) => {
       if (chrome.runtime.lastError) {
         console.error("Error sending message:", chrome.runtime.lastError.message);
