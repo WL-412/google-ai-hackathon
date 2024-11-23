@@ -32,7 +32,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
 
         setAnswers((prevAnswers) => {
           const newAnswers = [...prevAnswers];
-          newAnswers[message.index] = message.text;
+          if (message.index !== null) {
+            newAnswers[message.index] = message.text;
+          }
           console.log("Updated answer state:", newAnswers);
           return newAnswers;
         });

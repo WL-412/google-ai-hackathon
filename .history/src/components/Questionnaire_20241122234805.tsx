@@ -32,6 +32,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
 
         setAnswers((prevAnswers) => {
           const newAnswers = [...prevAnswers];
+          console.log(message.index);
           newAnswers[message.index] = message.text;
           console.log("Updated answer state:", newAnswers);
           return newAnswers;
@@ -67,7 +68,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   };
 
   const handleHighlightPen = (index: number) => {
-    chrome.runtime.sendMessage({ action: "start_highlight_mode", index: index }, (response) => {
+    chrome.runtime.sendMessage({ action: "start_highlight_mode", idx: index }, (response) => {
       if (chrome.runtime.lastError) {
         console.error("Error sending message:", chrome.runtime.lastError.message);
       } else if (response) {

@@ -211,6 +211,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (tabs[0]?.id) {
         chrome.tabs.sendMessage(tabs[0].id, {
           action: "text_highlighted",
+          index: message.index,
           text: message.text,
         });
       }

@@ -208,6 +208,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.action === "text_highlighted") {
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      // Send feedback to the active tab
       if (tabs[0]?.id) {
         chrome.tabs.sendMessage(tabs[0].id, {
           action: "text_highlighted",

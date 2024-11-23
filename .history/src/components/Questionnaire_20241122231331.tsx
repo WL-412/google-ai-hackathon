@@ -24,7 +24,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     Array(questionAnswerPairs.length).fill(false)
   );
 
-
   useEffect(() => {
     const handleMessage = (message: any) => {
       if (message.action === "text_highlighted") {
@@ -32,21 +31,15 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
 
         setAnswers((prevAnswers) => {
           const newAnswers = [...prevAnswers];
-          newAnswers[message.index] = message.text;
-          console.log("Updated answer state:", newAnswers);
+          if (activeQuestion !== null) {
+            newAnswers[activeQuestion] = message.text;
+          }
           return newAnswers;
         });
       }
 
       if (message.action === "display_feedback") {
         console.log("Feedback message received in Questionnaire:", message);
-        const { feedback: feedbackMessage, index } = message;
-        setFeedback((prevFeedback) => {
-          const newFeedback = [...prevFeedback];
-          newFeedback[index] = feedbackMessage;
-          console.log("Updated feedback state:", newFeedback);
-          return newFeedback;
-        });
       }
     };
 
@@ -67,7 +60,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   };
 
   const handleHighlightPen = (index: number) => {
-    chrome.runtime.sendMessage({ action: "start_highlight_mode", index: index }, (response) => {
+    chrome.runtime.sendMessage({ action: "start_highlight_mode" }, (response) => {
       if (chrome.runtime.lastError) {
         console.error("Error sending message:", chrome.runtime.lastError.message);
       } else if (response) {
