@@ -212,7 +212,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         chrome.tabs.sendMessage(tabs[0].id, {
           action: "text_highlighted",
           text: message.text,
-          index: message.index
+          index: index
         });
       }
     });

@@ -38,7 +38,7 @@ let highlightModeActive = false;
 
 function startHighlightMode(index) {
   highlightModeActive = true;
-  document.addEventListener('mouseup', () => handleHighlight(index));
+  document.addEventListener('mouseup', handleHighlight(index));
   console.log("Highlight mode activated.");
 }
 

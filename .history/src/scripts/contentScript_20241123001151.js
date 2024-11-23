@@ -38,7 +38,7 @@ let highlightModeActive = false;
 
 function startHighlightMode(index) {
   highlightModeActive = true;
-  document.addEventListener('mouseup', () => handleHighlight(index));
+  document.addEventListener('mouseup', handleHighlight(index));
   console.log("Highlight mode activated.");
 }
 
@@ -66,7 +66,7 @@ function handleHighlight(index) {
     range.insertNode(highlightSpan);
 
     // Send the selected text back to the extension
-    chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index: index });
+    chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index });
     stopHighlightMode();
   }
 }

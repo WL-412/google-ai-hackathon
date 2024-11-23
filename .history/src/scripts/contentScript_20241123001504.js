@@ -27,8 +27,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const content = extractPageContent();
     sendResponse({ content });
   } else if (message.action === "start_highlight_mode") {
-    const { index } = message;
-    startHighlightMode(index);
+    startHighlightMode();
     sendResponse({ status: "Highlight mode started" });
   }
 });
@@ -36,9 +35,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 let highlightModeActive = false;
 
-function startHighlightMode(index) {
+function startHighlightMode() {
   highlightModeActive = true;
-  document.addEventListener('mouseup', () => handleHighlight(index));
+  document.addEventListener('mouseup', handleHighlight);
   console.log("Highlight mode activated.");
 }
 
@@ -48,7 +47,7 @@ function stopHighlightMode() {
   console.log("Highlight mode deactivated.");
 }
 
-function handleHighlight(index) {
+function handleHighlight() {
   if (!highlightModeActive) return;
 
   const selection = window.getSelection();
@@ -66,7 +65,7 @@ function handleHighlight(index) {
     range.insertNode(highlightSpan);
 
     // Send the selected text back to the extension
-    chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index: index });
+    chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText });
     stopHighlightMode();
   }
 }
