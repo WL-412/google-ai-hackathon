@@ -76,24 +76,8 @@ function handleHighlight() {
         const highlightSpan = document.createElement('span');
         highlightSpan.style.background = 'lightblue';
         highlightSpan.style.borderRadius = '3px';
-        highlightSpan.style.padding = '0 4px';
-        highlightSpan.style.marginRight = '4px';
         highlightSpan.textContent = node.textContent;
-
-        // Create a question number label
-        const questionLabel = document.createElement('span');
-        questionLabel.textContent = ` [Q${currentIndex + 1}]`;
-        questionLabel.style.color = '#ffffff';
-        questionLabel.style.backgroundColor = '#0078D7';
-        questionLabel.style.borderRadius = '3px';
-        questionLabel.style.padding = '0 6px';
-        questionLabel.style.marginLeft = '6px';
-        questionLabel.style.fontSize = '0.85em';
-        questionLabel.style.fontWeight = 'bold';
-
-        // Append both the highlighted span and the question label
         fragment.appendChild(highlightSpan);
-        fragment.appendChild(questionLabel);
       } else if (node.nodeType === Node.ELEMENT_NODE) {
         // For element nodes, preserve their structure and process their children
         const clonedElement = node.cloneNode(true);
@@ -111,4 +95,23 @@ function handleHighlight() {
 
     stopHighlightMode();
   }
+}
+
+// Helper function to highlight text content within an element node
+function highlightElementContents(element) {
+  element.childNodes.forEach((child) => {
+    if (child.nodeType === Node.TEXT_NODE) {
+      // Wrap text nodes in a highlight span
+      const highlightSpan = document.createElement('span');
+      highlightSpan.style.background = 'lightblue';
+      highlightSpan.style.borderRadius = '3px';
+      highlightSpan.textContent = child.textContent;
+
+      // Replace the text node with the highlighted span
+      child.replaceWith(highlightSpan);
+    } else if (child.nodeType === Node.ELEMENT_NODE) {
+      // Recursively process child elements
+      highlightElementContents(child);
+    }
+  });
 }

@@ -62,53 +62,37 @@ function handleHighlight() {
   const selection = window.getSelection();
   if (selection && selection.toString().trim()) {
     const range = selection.getRangeAt(0);
+    const commonAncestor = range.commonAncestorContainer;
+
+    // Process multi-paragraph selection
+    if (selection.rangeCount > 0 && commonAncestor.nodeType === Node.ELEMENT_NODE) {
+      const fragment = range.cloneContents();
+      const span = document.createElement('span');
+      span.style.background = 'lightblue';
+      span.style.borderRadius = '3px';
+
+      // Add highlight style to selected text within the fragment
+      fragment.childNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const textNode = document.createTextNode(node.nodeValue);
+          const highlightSpan = document.createElement('span');
+          highlightSpan.style.background = 'lightblue';
+          highlightSpan.style.borderRadius = '3px';
+          highlightSpan.textContent = textNode.nodeValue;
+          span.appendChild(highlightSpan);
+        } else {
+          span.appendChild(node.cloneNode(true));
+        }
+      });
+
+      // Replace range content with the highlighted fragment
+      range.deleteContents();
+      range.insertNode(span);
+    }
+
+    // Send the selected text back to the extension
     const selectedText = selection.toString();
-
-    // Clone the selected content while preserving structure
-    const originalContents = range.cloneContents();
-
-    // Create a DocumentFragment to hold the processed content
-    const fragment = document.createDocumentFragment();
-
-    originalContents.childNodes.forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        // For plain text nodes, wrap them in a highlight span
-        const highlightSpan = document.createElement('span');
-        highlightSpan.style.background = 'lightblue';
-        highlightSpan.style.borderRadius = '3px';
-        highlightSpan.style.padding = '0 4px';
-        highlightSpan.style.marginRight = '4px';
-        highlightSpan.textContent = node.textContent;
-
-        // Create a question number label
-        const questionLabel = document.createElement('span');
-        questionLabel.textContent = ` [Q${currentIndex + 1}]`;
-        questionLabel.style.color = '#ffffff';
-        questionLabel.style.backgroundColor = '#0078D7';
-        questionLabel.style.borderRadius = '3px';
-        questionLabel.style.padding = '0 6px';
-        questionLabel.style.marginLeft = '6px';
-        questionLabel.style.fontSize = '0.85em';
-        questionLabel.style.fontWeight = 'bold';
-
-        // Append both the highlighted span and the question label
-        fragment.appendChild(highlightSpan);
-        fragment.appendChild(questionLabel);
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        // For element nodes, preserve their structure and process their children
-        const clonedElement = node.cloneNode(true);
-        highlightElementContents(clonedElement);
-        fragment.appendChild(clonedElement);
-      }
-    });
-
-    // Replace the original range contents with the fragment
-    range.deleteContents();
-    range.insertNode(fragment);
-
-    // Send the highlighted text and index back to the extension
     chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index: currentIndex });
-
     stopHighlightMode();
   }
 }

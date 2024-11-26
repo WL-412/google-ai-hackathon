@@ -64,45 +64,29 @@ function handleHighlight() {
     const range = selection.getRangeAt(0);
     const selectedText = selection.toString();
 
-    // Clone the selected content while preserving structure
+    // Save the original content of the range
     const originalContents = range.cloneContents();
 
-    // Create a DocumentFragment to hold the processed content
+    // Create a document fragment to hold the highlighted nodes
     const fragment = document.createDocumentFragment();
+
+    console.log(originalContents);
 
     originalContents.childNodes.forEach((node) => {
       if (node.nodeType === Node.TEXT_NODE) {
-        // For plain text nodes, wrap them in a highlight span
+        // For text nodes, create a span to highlight the text
         const highlightSpan = document.createElement('span');
         highlightSpan.style.background = 'lightblue';
         highlightSpan.style.borderRadius = '3px';
-        highlightSpan.style.padding = '0 4px';
-        highlightSpan.style.marginRight = '4px';
         highlightSpan.textContent = node.textContent;
-
-        // Create a question number label
-        const questionLabel = document.createElement('span');
-        questionLabel.textContent = ` [Q${currentIndex + 1}]`;
-        questionLabel.style.color = '#ffffff';
-        questionLabel.style.backgroundColor = '#0078D7';
-        questionLabel.style.borderRadius = '3px';
-        questionLabel.style.padding = '0 6px';
-        questionLabel.style.marginLeft = '6px';
-        questionLabel.style.fontSize = '0.85em';
-        questionLabel.style.fontWeight = 'bold';
-
-        // Append both the highlighted span and the question label
         fragment.appendChild(highlightSpan);
-        fragment.appendChild(questionLabel);
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        // For element nodes, preserve their structure and process their children
-        const clonedElement = node.cloneNode(true);
-        highlightElementContents(clonedElement);
-        fragment.appendChild(clonedElement);
+      } else {
+        // For other node types (e.g., <br>, <p>), clone them without modification
+        fragment.appendChild(node.cloneNode(true));
       }
     });
 
-    // Replace the original range contents with the fragment
+    // Replace the original range contents with the highlighted fragment
     range.deleteContents();
     range.insertNode(fragment);
 
