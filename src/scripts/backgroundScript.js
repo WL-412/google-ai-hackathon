@@ -106,16 +106,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs[0]?.url) {
               const siteUrl = new URL(tabs[0].url).origin;
+              const siteTitle = tabs[0].title;
               chrome.storage.local.get("history", (result) => {
                 const history = result.history || {};
 
                 if (!history[siteUrl]) {
-                  history[siteUrl] = [];
+                  history[siteUrl] = { title: siteTitle, entries: [] };
                 }
 
                 // Add questions without user answers
                 questionAnswerPairs.forEach((pair) => {
-                  history[siteUrl].push(pair);
+                  history[siteUrl].entries.push(pair);
                 });
 
                 // Save the updated history
@@ -151,7 +152,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
               if (history[siteUrl]) {
                 // Update the specific question's userAnswer
-                const entry = history[siteUrl].find(
+                const entry = history[siteUrl].entries.find(
                   (item) => item.question === question
                 );
                 if (entry) {
