@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 /*
-Logic for Highlight Pen and Deletion is Below
+Logic for Highlight Pen is Below
 */
 let highlightModeActive = false;
 let currentIndex = null; // Track the active index globally
@@ -60,24 +60,15 @@ function saveHighlight(text, questionIndex, xpath) {
   });
 }
 
-// Delete a highlight from Chrome storage
-function deleteHighlight(xpath) {
-  chrome.storage.local.get({ highlights: [] }, (result) => {
-    const highlights = result.highlights.filter(highlight => highlight.xpath !== xpath);
-    chrome.storage.local.set({ highlights });
-  });
-}
-
 // Reapply highlights on page load
 function reapplyHighlights() {
-  console.log("Reapply highlighting!!");
   chrome.storage.local.get({ highlights: [] }, (result) => {
     const highlights = result.highlights;
 
     highlights.forEach(({ text, questionIndex, xpath }) => {
       const element = getElementByXPath(xpath);
       if (element) {
-        highlightTextInElement(element, text, questionIndex, xpath);
+        highlightTextInElement(element, text, questionIndex);
       }
     });
   });
@@ -110,7 +101,13 @@ function handleHighlight() {
         highlightSpan.style.marginRight = '4px';
         highlightSpan.textContent = node.textContent;
 
-        // Create a question number label with deletion logic
+        // Attach the context menu event listener to allow deletion
+        highlightSpan.addEventListener('contextmenu', (event) => {
+          event.preventDefault();
+          deleteHighlight(xpath, selectedText, highlightSpan);
+        });
+
+        // Create a question number label
         const questionLabel = document.createElement('span');
         questionLabel.textContent = ` [Q${currentIndex + 1}]`;
         questionLabel.style.color = '#ffffff';
@@ -120,31 +117,10 @@ function handleHighlight() {
         questionLabel.style.marginLeft = '6px';
         questionLabel.style.fontSize = '0.85em';
         questionLabel.style.fontWeight = 'bold';
-        questionLabel.style.cursor = 'pointer';
-
-        // Add event listener to handle deletion
-        questionLabel.addEventListener('click', () => {
-          const confirmDelete = confirm("Do you want to delete this highlight?");
-          if (confirmDelete) {
-            // Remove the highlight and restore the original text
-            const parent = highlightSpan.parentNode;
-            const originalText = highlightSpan.textContent;
-            parent.replaceChild(document.createTextNode(originalText), highlightSpan);
-            parent.removeChild(questionLabel);
-
-            // Remove the highlight from storage
-            deleteHighlight(xpath);
-          }
-        });
 
         // Append both the highlighted span and the question label
         fragment.appendChild(highlightSpan);
         fragment.appendChild(questionLabel);
-      } else if (node.nodeType === Node.ELEMENT_NODE) {
-        // For element nodes, preserve their structure and process their children
-        const clonedElement = node.cloneNode(true);
-        highlightElementContents(clonedElement);
-        fragment.appendChild(clonedElement);
       }
     });
 
@@ -160,6 +136,23 @@ function handleHighlight() {
 
     stopHighlightMode();
   }
+}
+
+// Delete highlight and restore original content
+function deleteHighlight(xpath, text, highlightElement) {
+  chrome.storage.local.get({ highlights: [] }, (result) => {
+    const highlights = result.highlights.filter((highlight) => highlight.text !== text || highlight.xpath !== xpath);
+    chrome.storage.local.set({ highlights }, () => {
+      console.log("Highlight removed:", text);
+
+      // Restore the original text in the DOM
+      const parent = highlightElement.parentNode;
+      if (parent) {
+        const originalTextNode = document.createTextNode(text);
+        parent.replaceChild(originalTextNode, highlightElement);
+      }
+    });
+  });
 }
 
 // Utility to get XPath of an element
@@ -204,22 +197,11 @@ function getElementByXPath(xpath) {
 }
 
 // Highlight text in a specific element
-function highlightTextInElement(element, text, questionIndex, xpath) {
+function highlightTextInElement(element, text, questionIndex) {
   const innerHTML = element.innerHTML;
-  const highlightHTML = `<span style="background: lightblue; border-radius: 3px; padding: 0 4px; margin-right: 4px;">${text}</span>` +
-    `<span style="color: #ffffff; background-color: #0078D7; border-radius: 3px; padding: 0 6px; margin-left: 6px; font-size: 0.85em; font-weight: bold; cursor: pointer;" data-xpath="${xpath}"> [Q${questionIndex + 1}]</span>`;
+  const highlightHTML = `<span style="background: lightblue; border-radius: 3px; padding: 0 4px; margin-right: 4px;" oncontextmenu="return false;">${text}</span>` +
+    `<span style="color: #ffffff; background-color: #0078D7; border-radius: 3px; padding: 0 6px; margin-left: 6px; font-size: 0.85em; font-weight: bold;"> [Q${questionIndex + 1}]</span>`;
   element.innerHTML = innerHTML.replace(text, highlightHTML);
-
-  const label = element.querySelector(`[data-xpath="${xpath}"]`);
-  if (label) {
-    label.addEventListener('click', () => {
-      const confirmDelete = confirm("Do you want to delete this highlight?");
-      if (confirmDelete) {
-        deleteHighlight(xpath);
-        element.innerHTML = innerHTML.replace(highlightHTML, text);
-      }
-    });
-  }
 }
 
 // Reapply highlights when the page loads
