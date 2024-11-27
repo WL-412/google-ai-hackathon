@@ -7,58 +7,40 @@ import CloseIcon from "@mui/icons-material/Close";
 type SidebarProps = {
   isOpen: boolean;
   onClose: () => void;
-  summary: string;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
-  const [questionAnswerPairs, setQuestionAnswerPairs] = useState<
-    { question: string; answer: string }[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [view, setView] = useState<"questions" | "history">("questions");
+type Page = "landing" | "library" | "hunt";
 
-  useEffect(() => {
-    chrome.storage.local.get("questionAnswerPairs", (result) => {
-      if (result.questionAnswerPairs) {
-        setQuestionAnswerPairs(result.questionAnswerPairs);
-      }
-    });
-  }, []);
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const [currentPage, setCurrentPage] = useState<Page>("landing");
 
-  const handleGenerateQuestions = () => {
-    setQuestionAnswerPairs([]);
-    setIsLoading(true);
-
-    chrome.runtime.sendMessage({ action: "get_active_tab" }, (response) => {
-      if (response && response.tabId) {
-        chrome.runtime.sendMessage(
-          { action: "extract_content", tabId: response.tabId },
-          (contentResponse) => {
-            if (contentResponse && contentResponse.content) {
-              chrome.runtime.sendMessage(
-                { action: "summarize_page", content: contentResponse.content },
-                (summarizeResponse) => {
-                  setIsLoading(false);
-                  if (
-                    summarizeResponse &&
-                    summarizeResponse.questionAnswerPairs
-                  ) {
-                    setQuestionAnswerPairs(
-                      summarizeResponse.questionAnswerPairs
-                    );
-                  }
-                }
-              );
-            } else {
-              setIsLoading(false);
-            }
-          }
+  const renderPage = () => {
+    switch (currentPage) {
+      case "landing":
+        return (
+          <div className="landing-page">
+            <h3>Welcome!</h3>
+            <button
+              className="extension-button"
+              onClick={() => setCurrentPage("library")}
+            >
+              My Library
+            </button>
+            <button
+              className="extension-button"
+              onClick={() => setCurrentPage("hunt")}
+            >
+              Start a Hunt
+            </button>
+          </div>
         );
-      } else {
-        console.error("Failed to get active tab:", chrome.runtime.lastError);
-        setIsLoading(false);
-      }
-    });
+      case "library":
+        return <HistoryLibrary onBack={() => setCurrentPage("landing")} />;
+      case "hunt":
+        return <Questionnaire onBack={() => setCurrentPage("landing")} />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -66,42 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, summary }) => {
       <button className="extension-sidebar-close" onClick={onClose}>
         <CloseIcon />
       </button>
-      <div className="extension-sidebar-content">
-        <h3>LET'S DO THIS</h3>
-        <div className="extension-view-toggle">
-          <button
-            className={`extension-toggle-button ${view === "questions" ? "active" : ""
-              }`}
-            onClick={() => setView("questions")}
-          >
-            Questions
-          </button>
-          <button
-            className={`extension-toggle-button ${view === "history" ? "active" : ""
-              }`}
-            onClick={() => setView("history")}
-          >
-            History
-          </button>
-        </div>
-        {view === "questions" && (
-          <div>
-            <button
-              className="extension-generate-button"
-              onClick={handleGenerateQuestions}
-            >
-              Generate Questions
-            </button>
-            {isLoading && (
-              <p className="extension-loading-text">Generating...</p>
-            )}
-            {!isLoading && questionAnswerPairs.length > 0 && (
-              <Questionnaire questionAnswerPairs={questionAnswerPairs} />
-            )}
-          </div>
-        )}
-        {view === "history" && <HistoryLibrary />}
-      </div>
+      <div className="extension-sidebar-content">{renderPage()}</div>
     </div>
   );
 };

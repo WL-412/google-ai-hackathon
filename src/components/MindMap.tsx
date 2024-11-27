@@ -133,7 +133,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
     <div>
       <button
         onClick={onGoBack}
-        style={{ position: "absolute", top: 10, left: 10 }}
+        style={{ position: "absolute", top: 10, left: 10, zIndex: 2147483647 }}
       >
         <ArrowBackIosIcon /> Back
       </button>

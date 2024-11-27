@@ -7,16 +7,6 @@ const FloatingSidebarContainer: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
-  const [summary, setSummary] = useState("");
-
-  useEffect(() => {
-    chrome.runtime.onMessage.addListener((message) => {
-      if (message.action === "display_summary") {
-        setSummary(message.summary);
-        setIsSidebarOpen(true);
-      }
-    });
-  }, []);
 
   const handleFigureClick = () => {
     if (!dragging) {
@@ -69,11 +59,7 @@ const FloatingSidebarContainer: React.FC = () => {
             top: `${position.y - 750}px`,
           }}
         >
-          <Sidebar
-            isOpen={isSidebarOpen}
-            onClose={handleCloseSidebar}
-            summary={summary}
-          />
+          <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
         </div>
       )}
     </div>

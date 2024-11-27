@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import MindMap from "./MindMap";
 import "../styles/HistoryLibrary.css";
 
-const HistoryLibrary: React.FC = () => {
+type HistoryLibraryProps = {
+  onBack: () => void;
+};
+
+const HistoryLibrary: React.FC<HistoryLibraryProps> = ({ onBack }) => {
   const [history, setHistory] = useState<{
     [key: string]: { title: string; entries: any[] };
   }>({});
@@ -16,32 +20,32 @@ const HistoryLibrary: React.FC = () => {
     });
   }, []);
 
+  if (selectedSite) {
+    return (
+      <MindMap
+        siteData={history[selectedSite]}
+        onGoBack={() => setSelectedSite(null)}
+      />
+    );
+  }
+
   return (
-    <div>
-      {selectedSite ? (
-        <MindMap
-          siteData={history[selectedSite]}
-          onGoBack={() => setSelectedSite(null)}
-        />
-      ) : (
-        <div>
-          <h3>My Library</h3>
-          <div>
-            <h4>Websites:</h4>
-            <ul className="website-list">
-              {Object.keys(history).map((site) => (
-                <li
-                  key={site}
-                  onClick={() => setSelectedSite(site)}
-                  className="website-item"
-                >
-                  <h5 className="website-title">{history[site].title}</h5>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
+    <div className="history-library">
+      <button onClick={onBack} className="back-button">
+        Back
+      </button>
+      <h3>My Library</h3>
+      <ul className="website-list">
+        {Object.keys(history).map((site) => (
+          <li
+            key={site}
+            onClick={() => setSelectedSite(site)}
+            className="website-item"
+          >
+            <h5>{history[site].title}</h5>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
