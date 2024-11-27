@@ -16,7 +16,10 @@ interface MindMapProps {
 const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
   const [nodes, setNodes] = useState(() => generateInitialNodes(siteData));
   const [edges, setEdges] = useState(() => generateInitialEdges(siteData));
-  const [expandedQuestions, setExpandedQuestions] = useState<Set<string>>(
+  const [expandedAnswers, setExpandedAnswers] = useState<Set<string>>(
+    new Set()
+  );
+  const [expandedFeedback, setExpandedFeedback] = useState<Set<string>>(
     new Set()
   );
 
@@ -25,7 +28,11 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
       setNodes((nds) => applyNodeChanges(changes, nds));
       changes.forEach((change) => {
         if (change.type === "select" && change.selected) {
-          handleQuestionClick(change.id);
+          if (change.id.startsWith("question-")) {
+            handleQuestionClick(change.id);
+          } else if (change.id.startsWith("answer-")) {
+            handleAnswerClick(change.id);
+          }
         }
       });
     },
@@ -39,11 +46,9 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
   );
 
   const handleQuestionClick = (id: string) => {
-    if (!id.startsWith("question-")) return;
-
     const questionIndex = id.split("-")[1];
 
-    setExpandedQuestions((prev) => {
+    setExpandedAnswers((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -53,11 +58,11 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
 
       setNodes((currentNodes) =>
         currentNodes.map((node) => {
-          if (
-            node.id === `answer-${questionIndex}` ||
-            node.id === `feedback-${questionIndex}`
-          ) {
+          if (node.id === `answer-${questionIndex}`) {
             return { ...node, hidden: !newSet.has(id) };
+          }
+          if (node.id === `feedback-${questionIndex}`) {
+            return { ...node, hidden: true };
           }
           return node;
         })
@@ -66,16 +71,60 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
       setEdges((currentEdges) =>
         currentEdges.map((edge) => {
           if (
-            edge.id === `e-question-${questionIndex}-answer-${questionIndex}` ||
+            edge.id === `e-question-${questionIndex}-answer-${questionIndex}`
+          ) {
+            return { ...edge, hidden: !newSet.has(id) };
+          }
+          if (
             edge.id === `e-answer-${questionIndex}-feedback-${questionIndex}`
           ) {
+            return { ...edge, hidden: true };
+          }
+          return edge;
+        })
+      );
+
+      if (!newSet.has(id)) {
+        setExpandedFeedback((prevFeedback) => {
+          const feedbackSet = new Set(prevFeedback);
+          feedbackSet.delete(`answer-${questionIndex}`);
+          return feedbackSet;
+        });
+      }
+
+      return newSet;
+    });
+  };
+
+  const handleAnswerClick = (id: string) => {
+    const answerIndex = id.split("-")[1];
+
+    setExpandedFeedback((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+
+      setNodes((currentNodes) =>
+        currentNodes.map((node) => {
+          if (node.id === `feedback-${answerIndex}`) {
+            return { ...node, hidden: !newSet.has(id) };
+          }
+          return node;
+        })
+      );
+
+      setEdges((currentEdges) =>
+        currentEdges.map((edge) => {
+          if (edge.id === `e-answer-${answerIndex}-feedback-${answerIndex}`) {
             return { ...edge, hidden: !newSet.has(id) };
           }
           return edge;
         })
       );
 
-      console.log("newSet", newSet);
       return newSet;
     });
   };
@@ -120,6 +169,7 @@ const generateInitialNodes = (siteData: { title: string; entries: any[] }) => {
         data: { label: entry.userAnswer },
         position: { x: 200, y: (index + 1) * 100 },
         hidden: true,
+        style: { cursor: "pointer" },
       },
       {
         id: `feedback-${index}`,
