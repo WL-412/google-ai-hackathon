@@ -24,7 +24,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     Array(questionAnswerPairs.length).fill(false)
   );
 
-
   useEffect(() => {
     const handleMessage = (message: any) => {
       if (message.action === "text_highlighted") {
@@ -56,8 +55,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     };
   }, []);
 
-
-
   const handleChange = (index: number, value: string) => {
     const newAnswers = [...answers];
     newAnswers[index] = value;
@@ -65,27 +62,59 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   };
 
   const handleHighlightPen = (index: number) => {
-    chrome.runtime.sendMessage({ action: "start_highlight_mode", index }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("Error sending message:", chrome.runtime.lastError.message);
-      } else if (response) {
-        console.log("Response from content script:", response.status);
-      } else {
-        console.warn("No response received from content script.");
+    chrome.runtime.sendMessage(
+      { action: "start_highlight_mode", index },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "Error sending message:",
+            chrome.runtime.lastError.message
+          );
+        } else if (response) {
+          console.log("Response from content script:", response.status);
+        } else {
+          console.warn("No response received from content script.");
+        }
       }
-    });
+    );
   };
 
   const validateAnswer = (index: number) => {
     const question = questionAnswerPairs[index].question;
     const userAnswer = answers[index];
 
-    chrome.runtime.sendMessage({
-      action: "validate_answer",
-      question,
-      userAnswer,
-      index,
-    });
+    chrome.runtime.sendMessage(
+      {
+        action: "validate_answer",
+        question,
+        userAnswer,
+        index,
+      },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "Error validating answer:",
+            chrome.runtime.lastError.message
+          );
+        } else {
+          console.log("Validation response:", response);
+        }
+
+        chrome.runtime.sendMessage(
+          { action: "learn_more", question, userAnswer, index },
+          (learnMoreResponse) => {
+            if (learnMoreResponse.success) {
+              console.log(
+                `Explore response for question ${index}:`,
+                learnMoreResponse.exploreResponse
+              );
+            } else {
+              console.error("Error in LearnMore:", learnMoreResponse.error);
+            }
+          }
+        );
+      }
+    );
 
     setSubmitted((prevSubmitted) => {
       const newSubmitted = [...prevSubmitted];
@@ -120,7 +149,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 className="extension-input-box"
               />
               <button
-                className="extension-button" onClick={() => handleHighlightPen(index)}>Highlight Pen</button>
+                className="extension-button"
+                onClick={() => handleHighlightPen(index)}
+              >
+                Marker
+              </button>
               <button
                 onClick={() => validateAnswer(index)}
                 className="extension-button"

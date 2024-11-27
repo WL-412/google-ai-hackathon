@@ -19,7 +19,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
   const [expandedAnswers, setExpandedAnswers] = useState<Set<string>>(
     new Set()
   );
-  const [expandedFeedback, setExpandedFeedback] = useState<Set<string>>(
+  const [expandedExplore, setExpandedExplore] = useState<Set<string>>(
     new Set()
   );
 
@@ -61,7 +61,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
           if (node.id === `answer-${questionIndex}`) {
             return { ...node, hidden: !newSet.has(id) };
           }
-          if (node.id === `feedback-${questionIndex}`) {
+          if (node.id === `explore-${questionIndex}`) {
             return { ...node, hidden: true };
           }
           return node;
@@ -76,7 +76,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
             return { ...edge, hidden: !newSet.has(id) };
           }
           if (
-            edge.id === `e-answer-${questionIndex}-feedback-${questionIndex}`
+            edge.id === `e-answer-${questionIndex}-explore-${questionIndex}`
           ) {
             return { ...edge, hidden: true };
           }
@@ -85,10 +85,10 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
       );
 
       if (!newSet.has(id)) {
-        setExpandedFeedback((prevFeedback) => {
-          const feedbackSet = new Set(prevFeedback);
-          feedbackSet.delete(`answer-${questionIndex}`);
-          return feedbackSet;
+        setExpandedExplore((prevExplore) => {
+          const exploreSet = new Set(prevExplore);
+          exploreSet.delete(`answer-${questionIndex}`);
+          return exploreSet;
         });
       }
 
@@ -99,7 +99,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
   const handleAnswerClick = (id: string) => {
     const answerIndex = id.split("-")[1];
 
-    setExpandedFeedback((prev) => {
+    setExpandedExplore((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
@@ -109,7 +109,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
 
       setNodes((currentNodes) =>
         currentNodes.map((node) => {
-          if (node.id === `feedback-${answerIndex}`) {
+          if (node.id === `explore-${answerIndex}`) {
             return { ...node, hidden: !newSet.has(id) };
           }
           return node;
@@ -118,7 +118,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
 
       setEdges((currentEdges) =>
         currentEdges.map((edge) => {
-          if (edge.id === `e-answer-${answerIndex}-feedback-${answerIndex}`) {
+          if (edge.id === `e-answer-${answerIndex}-explore-${answerIndex}`) {
             return { ...edge, hidden: !newSet.has(id) };
           }
           return edge;
@@ -172,8 +172,8 @@ const generateInitialNodes = (siteData: { title: string; entries: any[] }) => {
         style: { cursor: "pointer" },
       },
       {
-        id: `feedback-${index}`,
-        data: { label: entry.answer },
+        id: `explore-${index}`,
+        data: { label: entry.explore },
         position: { x: 400, y: (index + 1) * 100 },
         hidden: true,
       },
@@ -197,9 +197,9 @@ const generateInitialEdges = (siteData: { title: string; entries: any[] }) => {
         hidden: true,
       },
       {
-        id: `e-answer-${index}-feedback-${index}`,
+        id: `e-answer-${index}-explore-${index}`,
         source: `answer-${index}`,
-        target: `feedback-${index}`,
+        target: `explore-${index}`,
         hidden: true,
       },
     ]),

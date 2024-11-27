@@ -28,8 +28,15 @@ async function validateAnswer(question, userAnswer) {
   const prompt = `Under the context of the above article, score the answer to this question: "${question}" 
   with the user answer: "${userAnswer}". 
   Respond with a score between 0 and 10 based on the correctness of the answer. 
-  Return in this format: "Your Score: {score}/10".
-  After that, give me a paragraph that explores the key concepts in the question in more detail. `;
+  Return in this format: "Your Score: {score}/10". No other text or formatting.`;
+  return runPrompt(prompt, { temperature: 0.7, topK: 5 });
+}
+
+async function learnMore(question, userAnswer) {
+  const prompt = `Under the context of the above article, provide a list of bullet points that explores the key concepts 
+  in the question and answer to enhance user's understanding.
+  Question: "${question}"
+  Answer: "${userAnswer}"`;
   return runPrompt(prompt, { temperature: 0.7, topK: 5 });
 }
 
@@ -96,7 +103,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
               if (questionLine && answerLine) {
                 const question = questionLine.replace(/^question:\s*/i, "").trim();
                 const answer = answerLine.replace(/^answer:\s*/i, "").trim();
-                return { question, answer, userAnswer: null };
+                return { question, answer, userAnswer: null, explore: null };
               }
               return null;
             })
@@ -217,6 +224,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       }
     });
+    return true;
+  } else if (message.action === "learn_more") {
+    const { question, userAnswer, index } = message;
+
+    learnMore(question, userAnswer)
+      .then((exploreResponse) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs[0]?.url) {
+            const siteUrl = new URL(tabs[0].url).origin;
+
+            chrome.storage.local.get("history", (result) => {
+              const history = result.history || {};
+
+              if (history[siteUrl]) {
+                const entry = history[siteUrl].entries[index];
+                if (entry) {
+                  entry.explore = exploreResponse;
+                }
+
+                chrome.storage.local.set({ history }, () => {
+                  console.log(
+                    `History updated with exploration for question ${index} at ${siteUrl}:`,
+                    history[siteUrl]
+                  );
+                });
+              }
+            });
+          }
+        });
+
+        sendResponse({ success: true, exploreResponse });
+      })
+      .catch((error) => {
+        console.error("Error in LearnMore:", error);
+        sendResponse({ success: false, error });
+      });
+
     return true;
   }
 });
