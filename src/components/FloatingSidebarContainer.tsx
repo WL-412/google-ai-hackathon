@@ -17,6 +17,7 @@ const FloatingSidebarContainer: React.FC = () => {
 
   const handleCloseSidebar = () => {
     setIsSidebarOpen(false);
+    setSidebarWidth(400);
   };
 
   const handleDrag = (e: any, data: any) => {

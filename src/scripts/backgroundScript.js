@@ -33,8 +33,9 @@ async function validateAnswer(question, userAnswer) {
 }
 
 async function learnMore(question, userAnswer) {
-  const prompt = `Under the context of the above article, provide a list of bullet points that explores the key concepts 
-  in the question and answer to enhance user's understanding.
+  const prompt = `Under the context of the above article, provide 3 bullet points that explores the key concepts 
+  in the question and answer to enhance user's understanding. Each bullet point should start with a number and a period. 
+  Do not format the response in any way.
   Question: "${question}"
   Answer: "${userAnswer}"`;
   return runPrompt(prompt, { temperature: 0.7, topK: 5 });

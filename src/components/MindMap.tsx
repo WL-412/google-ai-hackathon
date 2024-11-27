@@ -190,6 +190,7 @@ const generateInitialNodes = (siteData: { title: string; entries: any[] }) => {
         data: { label: entry.explore },
         position: { x: 300, y: (index + 1) * 150 },
         hidden: true,
+        style: { width: "300px" },
       },
     ]),
   ];
