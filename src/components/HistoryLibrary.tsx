@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
-import MindMap from "./MindMap";
 import "../styles/HistoryLibrary.css";
 
 type HistoryLibraryProps = {
   onBack: () => void;
+  onSelectSite: (siteData: { title: string; entries: any[] }) => void;
 };
 
-const HistoryLibrary: React.FC<HistoryLibraryProps> = ({ onBack }) => {
+const HistoryLibrary: React.FC<HistoryLibraryProps> = ({
+  onBack,
+  onSelectSite,
+}) => {
   const [history, setHistory] = useState<{
     [key: string]: { title: string; entries: any[] };
   }>({});
-  const [selectedSite, setSelectedSite] = useState<string | null>(null);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ action: "get_history" }, (response) => {
@@ -20,14 +22,9 @@ const HistoryLibrary: React.FC<HistoryLibraryProps> = ({ onBack }) => {
     });
   }, []);
 
-  if (selectedSite) {
-    return (
-      <MindMap
-        siteData={history[selectedSite]}
-        onGoBack={() => setSelectedSite(null)}
-      />
-    );
-  }
+  const handleSiteClick = (site: string) => {
+    onSelectSite(history[site]);
+  };
 
   return (
     <div className="history-library">
@@ -39,7 +36,7 @@ const HistoryLibrary: React.FC<HistoryLibraryProps> = ({ onBack }) => {
         {Object.keys(history).map((site) => (
           <li
             key={site}
-            onClick={() => setSelectedSite(site)}
+            onClick={() => handleSiteClick(site)}
             className="website-item"
           >
             <h5>{history[site].title}</h5>

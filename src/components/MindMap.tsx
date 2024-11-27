@@ -7,13 +7,15 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import FitScreenIcon from "@mui/icons-material/FitScreen";
 
 interface MindMapProps {
   siteData: { title: string; entries: any[] };
   onGoBack: () => void;
+  onEnlarge: () => void;
 }
 
-const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
+const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
   const [nodes, setNodes] = useState(() => generateInitialNodes(siteData));
   const [edges, setEdges] = useState(() => generateInitialEdges(siteData));
   const [expandedAnswers, setExpandedAnswers] = useState<Set<string>>(
@@ -137,6 +139,18 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
       >
         <ArrowBackIosIcon /> Back
       </button>
+      <button
+        onClick={onEnlarge}
+        style={{
+          position: "absolute",
+          top: 10,
+          right: 50,
+          zIndex: 2147483647,
+          cursor: "pointer",
+        }}
+      >
+        <FitScreenIcon />
+      </button>
       <div style={{ width: "100vw", height: "100vh" }}>
         <ReactFlow
           nodes={nodes}
@@ -155,26 +169,26 @@ const generateInitialNodes = (siteData: { title: string; entries: any[] }) => {
     {
       id: "root",
       data: { label: siteData.title },
-      position: { x: -200, y: 300 },
+      position: { x: -300, y: 300 },
     },
     ...siteData.entries.map((entry, index) => ({
       id: `question-${index}`,
       data: { label: entry.question },
-      position: { x: 0, y: (index + 1) * 100 },
+      position: { x: -100, y: (index + 1) * 150 },
       style: { cursor: "pointer" },
     })),
     ...siteData.entries.flatMap((entry, index) => [
       {
         id: `answer-${index}`,
         data: { label: entry.userAnswer },
-        position: { x: 200, y: (index + 1) * 100 },
+        position: { x: 100, y: (index + 1) * 150 },
         hidden: true,
         style: { cursor: "pointer" },
       },
       {
         id: `explore-${index}`,
         data: { label: entry.explore },
-        position: { x: 400, y: (index + 1) * 100 },
+        position: { x: 300, y: (index + 1) * 150 },
         hidden: true,
       },
     ]),

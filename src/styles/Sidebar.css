@@ -61,3 +61,20 @@
     font-size: 14px;
     color: #666;
 }
+
+.resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    cursor: ew-resize;
+    background-color: rgba(0, 0, 0, 0.1);
+    /* Slightly visible background */
+    z-index: 2147483647;
+}
+
+.resize-handle:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+    /* Highlight handle on hover */
+}

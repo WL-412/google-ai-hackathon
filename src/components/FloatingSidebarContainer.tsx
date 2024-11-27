@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import FloatingFigure from "./FloatingFigure";
 import Sidebar from "./Sidebar";
 import Draggable from "react-draggable";
@@ -6,6 +6,7 @@ import Draggable from "react-draggable";
 const FloatingSidebarContainer: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [sidebarWidth, setSidebarWidth] = useState(400);
   const [dragging, setDragging] = useState(false);
 
   const handleFigureClick = () => {
@@ -55,11 +56,16 @@ const FloatingSidebarContainer: React.FC = () => {
         <div
           style={{
             position: "absolute",
-            left: `${position.x - 350}px`,
+            left: `${position.x - sidebarWidth}px`,
             top: `${position.y - 750}px`,
           }}
         >
-          <Sidebar isOpen={isSidebarOpen} onClose={handleCloseSidebar} />
+          <Sidebar
+            isOpen={isSidebarOpen}
+            onClose={handleCloseSidebar}
+            width={sidebarWidth}
+            setWidth={setSidebarWidth}
+          />
         </div>
       )}
     </div>
