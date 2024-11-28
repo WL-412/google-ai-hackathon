@@ -251,8 +251,6 @@ function getElementByXPath(xpath) {
 // Highlight text in a specific element
 function highlightTextInElement(element, text, questionIndex, xpath, isAnswer) {
   const innerHTML = element.innerHTML;
-
-  // Construct the highlight HTML based on the type
   const highlightHTML = `
     <span style="background: ${isAnswer ? 'lightblue' : 'lightyellow'}; border-radius: 3px; padding: 0 4px; margin-right: 4px;">
       ${text}
@@ -264,36 +262,21 @@ function highlightTextInElement(element, text, questionIndex, xpath, isAnswer) {
       : ''
     }`;
 
-  // Update the element's innerHTML to include the highlight
+  // Update the element's innerHTML
   element.innerHTML = innerHTML.replace(text, highlightHTML);
 
-  if (isAnswer) {
-    // Add click listener for deletion of answer highlights
-    const label = element.querySelector(`[data-xpath="${xpath}"]`);
-    if (label) {
-      label.addEventListener('click', () => {
-        const confirmDelete = confirm("Do you want to delete this highlight?");
-        if (confirmDelete) {
-          deleteHighlight(xpath);
-          element.innerHTML = innerHTML; // Restore the original content
-        }
-      });
-    }
-  } else {
-    // Add click listener for deletion of normal highlights
-    const highlight = element.querySelector(`span[style*="background: lightyellow"]`);
-    if (highlight) {
-      highlight.addEventListener('click', () => {
-        const confirmDelete = confirm("Do you want to delete this normal highlight?");
-        if (confirmDelete) {
-          deleteHighlight(xpath);
-          element.innerHTML = innerHTML; // Restore the original content
-        }
-      });
-    }
+  // Add delete logic
+  const highlightSpan = element.querySelector(`[data-xpath="${xpath}"]`) || element.querySelector('span[style*="background"]');
+  if (highlightSpan) {
+    highlightSpan.addEventListener('click', () => {
+      const confirmDelete = confirm("Do you want to delete this highlight?");
+      if (confirmDelete) {
+        deleteHighlight(xpath);
+        element.innerHTML = innerHTML; // Revert to original content
+      }
+    });
   }
 }
-
 
 
 // Reapply highlights when the page loads
