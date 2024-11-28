@@ -192,21 +192,20 @@ function deleteHighlight(xpath) {
   });
 }
 
+// Reapply highlights on page load
 function reapplyHighlights() {
-  console.log("Reapplying highlights...");
+
   chrome.storage.local.get({ highlights: [] }, (result) => {
     const highlights = result.highlights;
 
     highlights.forEach(({ text, questionIndex, xpath, isAnswer }) => {
       const element = getElementByXPath(xpath);
       if (element) {
-        // Apply the specific highlight
         highlightTextInElement(element, text, questionIndex, xpath, isAnswer);
       }
     });
   });
 }
-
 
 // Utility to get XPath of an element
 function getXPathForElement(element) {
@@ -249,66 +248,92 @@ function getElementByXPath(xpath) {
   return result.singleNodeValue;
 }
 
-// Similar to highlight creation
+// Highlight text in a specific element
 function highlightTextInElement(element, text, questionIndex, xpath, isAnswer) {
-  // Find the text node containing the target text
-  const textNode = Array.from(element.childNodes).find(
-    (node) => node.nodeType === Node.TEXT_NODE && node.nodeValue.includes(text)
-  );
-
-  if (!textNode) return;
-
-  // Create a Range to isolate the target text
   const range = document.createRange();
-  const startIndex = textNode.nodeValue.indexOf(text);
-  range.setStart(textNode, startIndex);
-  range.setEnd(textNode, startIndex + text.length);
+  const startOffset = element.innerHTML.indexOf(text);
+  const endOffset = startOffset + text.length;
 
-  // Wrap the target text in a highlight span
+  if (startOffset === -1) return; // Text not found in element
+
+  // Create a unique identifier for the highlight
+  const highlightId = `highlight-${Date.now()}-${Math.random()}`;
+
+  range.setStart(element.firstChild, startOffset);
+  range.setEnd(element.firstChild, endOffset);
+
+  const fragment = document.createDocumentFragment();
+
+  // Create highlight span
   const highlightSpan = document.createElement('span');
   highlightSpan.style.background = isAnswer ? 'lightblue' : 'lightyellow';
   highlightSpan.style.borderRadius = '3px';
   highlightSpan.style.padding = '0 4px';
+  highlightSpan.setAttribute('data-id', highlightId); // Unique ID
   highlightSpan.textContent = text;
 
-  // Add deletion logic based on type
-  if (isAnswer) {
-    const label = document.createElement('span');
-    label.textContent = ` [Q${questionIndex + 1}]`;
-    label.style.color = '#ffffff';
-    label.style.backgroundColor = '#0078D7';
-    label.style.borderRadius = '3px';
-    label.style.padding = '0 6px';
-    label.style.marginLeft = '6px';
-    label.style.fontSize = '0.85em';
-    label.style.fontWeight = 'bold';
-    label.style.cursor = 'pointer';
+  // Append highlight span to the fragment
+  fragment.appendChild(highlightSpan);
 
-    // Attach deletion logic to the label
-    label.addEventListener('click', () => {
-      const confirmDelete = confirm("Do you want to delete this labelled highlight?");
+  if (isAnswer) {
+    // Create label for answer highlights
+    const questionLabel = document.createElement('span');
+    questionLabel.textContent = ` [Q${questionIndex + 1}]`;
+    questionLabel.style.color = '#ffffff';
+    questionLabel.style.backgroundColor = '#0078D7';
+    questionLabel.style.borderRadius = '3px';
+    questionLabel.style.padding = '0 6px';
+    questionLabel.style.marginLeft = '6px';
+    questionLabel.style.fontSize = '0.85em';
+    questionLabel.style.fontWeight = 'bold';
+    questionLabel.style.cursor = 'pointer';
+    questionLabel.setAttribute('data-id', highlightId); // Same ID as highlight span
+
+    // Add deletion logic for the label
+    questionLabel.addEventListener('click', () => {
+      const confirmDelete = confirm("Do you want to delete this highlight?");
       if (confirmDelete) {
         deleteHighlight(xpath);
-        highlightSpan.remove();
-        label.remove();
+        removeHighlightById(highlightId);
       }
     });
 
-    highlightSpan.appendChild(label);
+    fragment.appendChild(questionLabel);
   } else {
-    // Attach deletion logic for normal highlights
+    // Add deletion logic for normal highlight
     highlightSpan.addEventListener('click', () => {
-      const confirmDelete = confirm("Do you want to delete this normal highlight?");
+      const confirmDelete = confirm("Do you want to delete this highlight?");
       if (confirmDelete) {
         deleteHighlight(xpath);
-        highlightSpan.remove();
+        removeHighlightById(highlightId);
       }
     });
   }
 
-  // Replace the range with the highlight span
+  // Replace range with the fragment
   range.deleteContents();
-  range.insertNode(highlightSpan);
+  range.insertNode(fragment);
+}
+
+// Utility to remove highlights by unique ID
+function removeHighlightById(highlightId) {
+  const highlights = document.querySelectorAll(`[data-id="${highlightId}"]`);
+  highlights.forEach((node) => node.remove());
+}
+
+// Updated reapplyHighlights to handle unique identifiers
+function reapplyHighlights() {
+  console.log("Reapplying highlights...");
+  chrome.storage.local.get({ highlights: [] }, (result) => {
+    const highlights = result.highlights;
+
+    highlights.forEach(({ text, questionIndex, xpath, isAnswer }) => {
+      const element = getElementByXPath(xpath);
+      if (element) {
+        highlightTextInElement(element, text, questionIndex, xpath, isAnswer);
+      }
+    });
+  });
 }
 
 

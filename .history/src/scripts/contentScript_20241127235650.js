@@ -249,7 +249,6 @@ function getElementByXPath(xpath) {
   return result.singleNodeValue;
 }
 
-// Similar to highlight creation
 function highlightTextInElement(element, text, questionIndex, xpath, isAnswer) {
   // Find the text node containing the target text
   const textNode = Array.from(element.childNodes).find(

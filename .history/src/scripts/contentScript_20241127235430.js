@@ -192,21 +192,20 @@ function deleteHighlight(xpath) {
   });
 }
 
+// Reapply highlights on page load
 function reapplyHighlights() {
-  console.log("Reapplying highlights...");
+
   chrome.storage.local.get({ highlights: [] }, (result) => {
     const highlights = result.highlights;
 
     highlights.forEach(({ text, questionIndex, xpath, isAnswer }) => {
       const element = getElementByXPath(xpath);
       if (element) {
-        // Apply the specific highlight
         highlightTextInElement(element, text, questionIndex, xpath, isAnswer);
       }
     });
   });
 }
-
 
 // Utility to get XPath of an element
 function getXPathForElement(element) {
@@ -249,68 +248,51 @@ function getElementByXPath(xpath) {
   return result.singleNodeValue;
 }
 
-// Similar to highlight creation
+// Highlight text in a specific element
 function highlightTextInElement(element, text, questionIndex, xpath, isAnswer) {
-  // Find the text node containing the target text
-  const textNode = Array.from(element.childNodes).find(
-    (node) => node.nodeType === Node.TEXT_NODE && node.nodeValue.includes(text)
-  );
+  const innerHTML = element.innerHTML;
 
-  if (!textNode) return;
+  // Construct the highlight HTML based on the type
+  const highlightHTML = `
+    <span style="background: ${isAnswer ? 'lightblue' : 'lightyellow'}; border-radius: 3px; padding: 0 4px; margin-right: 4px;">
+      ${text}
+    </span>
+    ${isAnswer
+      ? `<span style="color: #ffffff; background-color: #0078D7; border-radius: 3px; padding: 0 6px; margin-left: 6px; font-size: 0.85em; font-weight: bold; cursor: pointer;" data-xpath="${xpath}">
+            [Q${questionIndex + 1}]
+          </span>`
+      : ''
+    }`;
 
-  // Create a Range to isolate the target text
-  const range = document.createRange();
-  const startIndex = textNode.nodeValue.indexOf(text);
-  range.setStart(textNode, startIndex);
-  range.setEnd(textNode, startIndex + text.length);
+  // Update the element's innerHTML to include the highlight
+  element.innerHTML = innerHTML.replace(text, highlightHTML);
 
-  // Wrap the target text in a highlight span
-  const highlightSpan = document.createElement('span');
-  highlightSpan.style.background = isAnswer ? 'lightblue' : 'lightyellow';
-  highlightSpan.style.borderRadius = '3px';
-  highlightSpan.style.padding = '0 4px';
-  highlightSpan.textContent = text;
-
-  // Add deletion logic based on type
   if (isAnswer) {
-    const label = document.createElement('span');
-    label.textContent = ` [Q${questionIndex + 1}]`;
-    label.style.color = '#ffffff';
-    label.style.backgroundColor = '#0078D7';
-    label.style.borderRadius = '3px';
-    label.style.padding = '0 6px';
-    label.style.marginLeft = '6px';
-    label.style.fontSize = '0.85em';
-    label.style.fontWeight = 'bold';
-    label.style.cursor = 'pointer';
-
-    // Attach deletion logic to the label
-    label.addEventListener('click', () => {
-      const confirmDelete = confirm("Do you want to delete this labelled highlight?");
-      if (confirmDelete) {
-        deleteHighlight(xpath);
-        highlightSpan.remove();
-        label.remove();
-      }
-    });
-
-    highlightSpan.appendChild(label);
+    // Add click listener for deletion of answer highlights
+    const label = element.querySelector(`[data-xpath="${xpath}"]`);
+    if (label) {
+      label.addEventListener('click', () => {
+        const confirmDelete = confirm("Do you want to delete this highlight?");
+        if (confirmDelete) {
+          deleteHighlight(xpath);
+          element.innerHTML = innerHTML; // Restore the original content
+        }
+      });
+    }
   } else {
-    // Attach deletion logic for normal highlights
-    highlightSpan.addEventListener('click', () => {
-      const confirmDelete = confirm("Do you want to delete this normal highlight?");
-      if (confirmDelete) {
-        deleteHighlight(xpath);
-        highlightSpan.remove();
-      }
-    });
+    // Add click listener for deletion of normal highlights
+    const highlight = element.querySelector(`span[style*="background: lightyellow"]`);
+    if (highlight) {
+      highlight.addEventListener('click', () => {
+        const confirmDelete = confirm("Do you want to delete this normal highlight?");
+        if (confirmDelete) {
+          deleteHighlight(xpath);
+          element.innerHTML = innerHTML; // Restore the original content
+        }
+      });
+    }
   }
-
-  // Replace the range with the highlight span
-  range.deleteContents();
-  range.insertNode(highlightSpan);
 }
-
 
 
 
