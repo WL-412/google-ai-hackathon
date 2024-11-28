@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 /*
-Highlighting Logic
+Logic for Highlight Pen and Deletion is Below
 */
 let highlightModeActive = false;
 let currentIndex = null; // Track the active index globally
