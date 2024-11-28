@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const content = extractPageContent();
     sendResponse({ content });
   } else if (message.action === "start_highlight_mode") {
-    const { index, answerMode: answerMode } = message;
+    const { index, answerMode } = message;
     startHighlightMode(index, answerMode);
     sendResponse({ status: "Highlight mode started" });
   }
@@ -265,19 +265,20 @@ function highlightTextInElement(element, text, questionIndex, xpath, isAnswer) {
   // Update the element's innerHTML
   element.innerHTML = innerHTML.replace(text, highlightHTML);
 
-  // Add delete logic
-  const highlightSpan = element.querySelector(`[data-xpath="${xpath}"]`) || element.querySelector('span[style*="background"]');
-  if (highlightSpan) {
-    highlightSpan.addEventListener('click', () => {
-      const confirmDelete = confirm("Do you want to delete this highlight?");
-      if (confirmDelete) {
-        deleteHighlight(xpath);
-        element.innerHTML = innerHTML; // Revert to original content
-      }
-    });
+  // Add click handler for delete (if answer highlight)
+  if (isAnswer) {
+    const label = element.querySelector(`[data-xpath="${xpath}"]`);
+    if (label) {
+      label.addEventListener('click', () => {
+        const confirmDelete = confirm("Do you want to delete this highlight?");
+        if (confirmDelete) {
+          deleteHighlight(xpath);
+          element.innerHTML = innerHTML; // Revert to original content
+        }
+      });
+    }
   }
 }
-
 
 // Reapply highlights when the page loads
 if (document.readyState === 'loading') {

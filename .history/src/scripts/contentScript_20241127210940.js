@@ -25,8 +25,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const content = extractPageContent();
     sendResponse({ content });
   } else if (message.action === "start_highlight_mode") {
-    const { index, answerMode: answerMode } = message;
-    startHighlightMode(index, answerMode);
+    const { index } = message;
+    startHighlightMode(index);
     sendResponse({ status: "Highlight mode started" });
   }
 });
@@ -65,64 +65,22 @@ function handleHighlight() {
 
     const xpath = getXPathForElement(range.commonAncestorContainer);
 
-    if (isAnswerMode) {
-      highlightForAnswering(range, selectedText, xpath);
-    } else {
-      highlightNormally(range, selectedText, xpath);
-    }
+    // Clone the selected content while preserving structure
+    const originalContents = range.cloneContents();
 
-    stopHighlightMode();
-  }
-}
+    // Create a DocumentFragment to hold the processed content
+    const fragment = document.createDocumentFragment();
 
-/*
-Answer Highlight Logic
-*/
-function highlightForAnswering(range, selectedText, xpath) {
-  const fragment = createHighlightFragment(range, xpath, true);
+    originalContents.childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        // For plain text nodes, wrap them in a highlight span
+        const highlightSpan = document.createElement('span');
+        highlightSpan.style.background = 'lightblue';
+        highlightSpan.style.borderRadius = '3px';
+        highlightSpan.style.padding = '0 4px';
+        highlightSpan.style.marginRight = '4px';
+        highlightSpan.textContent = node.textContent;
 
-  // Replace the original range contents with the fragment
-  range.deleteContents();
-  range.insertNode(fragment);
-
-  chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index: currentIndex });
-  saveHighlight(selectedText, currentIndex, xpath, true);
-}
-
-/*
-Normal Highlight Logic
-*/
-function highlightNormally(range, selectedText, xpath) {
-  const fragment = createHighlightFragment(range, xpath, false);
-
-  // Replace the original range contents with the fragment
-  range.deleteContents();
-  range.insertNode(fragment);
-
-  saveHighlight(selectedText, null, xpath, false);
-}
-
-/*
-Create Highlight Fragment
-*/
-function createHighlightFragment(range, xpath, includeLabel) {
-  // Clone the selected content while preserving structure
-  const originalContents = range.cloneContents();
-
-  // Create a DocumentFragment to hold the processed content
-  const fragment = document.createDocumentFragment();
-
-  originalContents.childNodes.forEach((node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      // For plain text nodes, wrap them in a highlight span
-      const highlightSpan = document.createElement('span');
-      highlightSpan.style.background = 'lightblue';
-      highlightSpan.style.borderRadius = '3px';
-      highlightSpan.style.padding = '0 4px';
-      highlightSpan.style.marginRight = '4px';
-      highlightSpan.textContent = node.textContent;
-
-      if (includeLabel) {
         // Create a question number label with deletion logic
         const questionLabel = document.createElement('span');
         questionLabel.textContent = ` [Q${currentIndex + 1}]`;
@@ -153,33 +111,29 @@ function createHighlightFragment(range, xpath, includeLabel) {
         // Append both the highlighted span and the question label
         fragment.appendChild(highlightSpan);
         fragment.appendChild(questionLabel);
-      } else {
-        highlightSpan.addEventListener('click', () => {
-          const confirmDelete = confirm("Do you want to delete this highlight?");
-          if (confirmDelete) {
-            deleteHighlight(xpath);
-            highlightSpan.remove();
-          }
-        });
-        fragment.appendChild(highlightSpan);
       }
+    });
 
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
-      // For element nodes, preserve their structure and process their children
-      const clonedElement = node.cloneNode(true);
-      highlightElementContents(clonedElement);
-      fragment.appendChild(clonedElement);
-    }
-  });
+    // Replace the original range contents with the fragment
+    range.deleteContents();
+    range.insertNode(fragment);
 
-  return fragment
+    // Send the highlighted text and index back to the extension
+    chrome.runtime.sendMessage({ action: "text_highlighted", text: selectedText, index: currentIndex });
+
+    // Save the highlight persistently
+    saveHighlight(selectedText, currentIndex, xpath);
+
+    stopHighlightMode();
+  }
 }
 
+
 // Store highlights persistently in Chrome storage
-function saveHighlight(text, questionIndex, xpath, isAnswer) {
+function saveHighlight(text, questionIndex, xpath) {
   chrome.storage.local.get({ highlights: [] }, (result) => {
     const highlights = result.highlights;
-    highlights.push({ text, questionIndex, xpath, isAnswer });
+    highlights.push({ text, questionIndex, xpath });
     chrome.storage.local.set({ highlights });
   });
 }
@@ -194,14 +148,14 @@ function deleteHighlight(xpath) {
 
 // Reapply highlights on page load
 function reapplyHighlights() {
-
+  console.log("Reapply highlighting!!");
   chrome.storage.local.get({ highlights: [] }, (result) => {
     const highlights = result.highlights;
 
-    highlights.forEach(({ text, questionIndex, xpath, isAnswer }) => {
+    highlights.forEach(({ text, questionIndex, xpath }) => {
       const element = getElementByXPath(xpath);
       if (element) {
-        highlightTextInElement(element, text, questionIndex, xpath, isAnswer);
+        highlightTextInElement(element, text, questionIndex, xpath);
       }
     });
   });
@@ -249,35 +203,23 @@ function getElementByXPath(xpath) {
 }
 
 // Highlight text in a specific element
-function highlightTextInElement(element, text, questionIndex, xpath, isAnswer) {
+function highlightTextInElement(element, text, questionIndex, xpath) {
   const innerHTML = element.innerHTML;
-  const highlightHTML = `
-    <span style="background: ${isAnswer ? 'lightblue' : 'lightyellow'}; border-radius: 3px; padding: 0 4px; margin-right: 4px;">
-      ${text}
-    </span>
-    ${isAnswer
-      ? `<span style="color: #ffffff; background-color: #0078D7; border-radius: 3px; padding: 0 6px; margin-left: 6px; font-size: 0.85em; font-weight: bold; cursor: pointer;" data-xpath="${xpath}">
-            [Q${questionIndex + 1}]
-          </span>`
-      : ''
-    }`;
-
-  // Update the element's innerHTML
+  const highlightHTML = `<span style="background: lightblue; border-radius: 3px; padding: 0 4px; margin-right: 4px;">${text}</span>` +
+    `<span style="color: #ffffff; background-color: #0078D7; border-radius: 3px; padding: 0 6px; margin-left: 6px; font-size: 0.85em; font-weight: bold; cursor: pointer;" data-xpath="${xpath}"> [Q${questionIndex + 1}]</span>`;
   element.innerHTML = innerHTML.replace(text, highlightHTML);
 
-  // Add delete logic
-  const highlightSpan = element.querySelector(`[data-xpath="${xpath}"]`) || element.querySelector('span[style*="background"]');
-  if (highlightSpan) {
-    highlightSpan.addEventListener('click', () => {
+  const label = element.querySelector(`[data-xpath="${xpath}"]`);
+  if (label) {
+    label.addEventListener('click', () => {
       const confirmDelete = confirm("Do you want to delete this highlight?");
       if (confirmDelete) {
         deleteHighlight(xpath);
-        element.innerHTML = innerHTML; // Revert to original content
+        element.innerHTML = innerHTML.replace(highlightHTML, text);
       }
     });
   }
 }
-
 
 // Reapply highlights when the page loads
 if (document.readyState === 'loading') {

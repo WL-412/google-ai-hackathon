@@ -102,9 +102,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ onBack }) => {
     setAnswers(newAnswers);
   };
 
-  const handleHighlightPen = (index: number, answerMode: boolean) => {
+  const handleHighlightPen = (index: number) => {
     chrome.runtime.sendMessage(
-      { action: "start_highlight_mode", index, answerMode: answerMode },
+      { action: "start_highlight_mode", index, true },
       (response) => {
         if (chrome.runtime.lastError) {
           console.error(
@@ -204,13 +204,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ onBack }) => {
                 />
                 <button
                   className="extension-button"
-                  onClick={() => handleHighlightPen(index, true)}
-                >
-                  Highlight the Answer
-                </button>
-                <button
-                  className="extension-button"
-                  onClick={() => handleHighlightPen(index, false)}
+                  onClick={() => handleHighlightPen(index)}
                 >
                   Marker
                 </button>
