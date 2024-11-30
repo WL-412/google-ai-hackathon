@@ -172,6 +172,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             <button
               onClick={() => validateAnswer(currentQuestionIndex)}
               className="extension-button"
+              disabled={!answers[currentQuestionIndex]?.trim()}
             >
               Submit
             </button>
