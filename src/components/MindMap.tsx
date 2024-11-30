@@ -18,15 +18,14 @@ interface MindMapProps {
   onGoBack: () => void;
   onEnlarge: () => void;
 }
-const AnswerNode = ({
-  data,
-}: {
-  data: {
-    label: string;
-    onContentChange: (content: string) => void;
-    onLearnMore: () => void;
-  };
-}) => {
+
+type DataType = {
+  label: string;
+  onContentChange: (content: string) => void;
+  onLearnMore: () => void;
+};
+
+const AnswerNode = ({ data }: { data: DataType }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(data.label);
 
@@ -55,6 +54,21 @@ const AnswerNode = ({
         </div>
       )}
       <Handle type="source" position={Position.Right} />
+    </div>
+  );
+};
+const ExploreNode = ({
+  data,
+}: {
+  data: { label: string; onClose: () => void };
+}) => {
+  return (
+    <div className="react-flow__node-default">
+      <Handle type="target" position={Position.Left} />
+      <div>
+        <div>{data.label}</div>
+        <button onClick={data.onClose}>Close</button>
+      </div>
     </div>
   );
 };
@@ -102,6 +116,10 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
     );
   };
 
+  const handleCloseExploreNode = () => {
+    setExpandedExplore(null);
+  };
+
   const handleAnswerContentChange = (index: number, newContent: string) => {
     setNodes((currentNodes) =>
       currentNodes.map((node) => {
@@ -128,7 +146,6 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
         ...prevSiteData,
         entries: newEntries,
       };
-
       saveDataToChromeStorage({
         ...updatedSiteData,
         siteUrl: window.location.origin,
@@ -186,7 +203,11 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
         },
         {
           id: `explore-${index}`,
-          data: { label: entry.explore },
+          type: "exploreNode",
+          data: {
+            label: entry.explore,
+            onClose: handleCloseExploreNode,
+          },
           position: { x: 300, y: (index + 1) * 150 },
           hidden: expandedExplore !== `answer-${index}`,
           style: { width: "300px" },
@@ -243,6 +264,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
 
   const nodeTypes = {
     answerNode: AnswerNode,
+    exploreNode: ExploreNode,
   };
 
   return (
