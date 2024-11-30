@@ -3,17 +3,17 @@ import "../styles/Questionnaire.css";
 
 interface QuestionnaireProps {
   onBack: () => void;
+  questionAnswerPairs: { question: string; answer: string }[];
 }
 
-const Questionnaire: React.FC<QuestionnaireProps> = ({ onBack }) => {
-  const [questionAnswerPairs, setQuestionAnswerPairs] = useState<
-    { question: string; answer: string }[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(false);
+const Questionnaire: React.FC<QuestionnaireProps> = ({
+  onBack,
+  questionAnswerPairs,
+}) => {
   const [answers, setAnswers] = useState<string[]>(
     Array(questionAnswerPairs.length).fill("")
   );
-  const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [feedback, setFeedback] = useState<string[]>(
     Array(questionAnswerPairs.length).fill("")
   );
@@ -22,48 +22,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ onBack }) => {
   );
 
   useEffect(() => {
-    chrome.storage.local.get("questionAnswerPairs", (result) => {
-      if (result.questionAnswerPairs) {
-        setQuestionAnswerPairs(result.questionAnswerPairs);
-      }
-    });
-  }, []);
-
-  const handleGenerateQuestions = () => {
-    setQuestionAnswerPairs([]);
-    setIsLoading(true);
-
-    chrome.runtime.sendMessage({ action: "get_active_tab" }, (response) => {
-      if (response && response.tabId) {
-        chrome.runtime.sendMessage(
-          { action: "extract_content", tabId: response.tabId },
-          (contentResponse) => {
-            if (contentResponse && contentResponse.content) {
-              chrome.runtime.sendMessage(
-                { action: "summarize_page", content: contentResponse.content },
-                (summarizeResponse) => {
-                  setIsLoading(false);
-                  if (
-                    summarizeResponse &&
-                    summarizeResponse.questionAnswerPairs
-                  ) {
-                    setQuestionAnswerPairs(
-                      summarizeResponse.questionAnswerPairs
-                    );
-                  }
-                }
-              );
-            } else {
-              setIsLoading(false);
-            }
-          }
-        );
-      } else {
-        console.error("Failed to get active tab:", chrome.runtime.lastError);
-        setIsLoading(false);
-      }
-    });
-  };
+    setAnswers(Array(questionAnswerPairs.length).fill(""));
+    setFeedback(Array(questionAnswerPairs.length).fill(""));
+    setSubmitted(Array(questionAnswerPairs.length).fill(false));
+  }, [questionAnswerPairs]);
 
   useEffect(() => {
     const handleMessage = (message: any) => {
@@ -71,18 +33,15 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ onBack }) => {
         setAnswers((prevAnswers) => {
           const newAnswers = [...prevAnswers];
           newAnswers[message.index] = message.text;
-          console.log("Updated answer state:", newAnswers);
           return newAnswers;
         });
       }
 
       if (message.action === "display_feedback") {
-        console.log("Feedback message received in Questionnaire:", message);
         const { feedback: feedbackMessage, index } = message;
         setFeedback((prevFeedback) => {
           const newFeedback = [...prevFeedback];
           newFeedback[index] = feedbackMessage;
-          console.log("Updated feedback state:", newFeedback);
           return newFeedback;
         });
       }
@@ -90,7 +49,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ onBack }) => {
 
     chrome.runtime.onMessage.addListener(handleMessage);
 
-    // Cleanup listener on component unmount
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessage);
     };
@@ -164,74 +122,73 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({ onBack }) => {
     });
   };
 
-  const toggleQuestion = (index: number) => {
-    setActiveQuestion(activeQuestion === index ? null : index);
-  };
-
   return (
     <div>
       <button onClick={onBack} className="back-button">
         Back
       </button>
       <h3>LET'S DO THIS</h3>
-      <button
-        className="extension-generate-button"
-        onClick={handleGenerateQuestions}
-      >
-        Generate Questions
-      </button>
-      {isLoading && <p className="extension-loading-text">Generating...</p>}
-      {!isLoading &&
-        questionAnswerPairs.length > 0 &&
-        questionAnswerPairs.map((pair, index) => (
-          <div key={index} className="extension-question-container">
-            <div
-              onClick={() => toggleQuestion(index)}
-              className="extension-question-header"
+      {questionAnswerPairs.length > 0 && (
+        <div>
+          <div className="question-navigation">
+            {questionAnswerPairs.slice(0, 5).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentQuestionIndex(index)}
+                className={`question-nav-button ${
+                  currentQuestionIndex === index ? "active" : ""
+                }`}
+              >
+                Q{index + 1}
+              </button>
+            ))}
+          </div>
+          <div className="extension-question-container">
+            <p>
+              <strong>Question {currentQuestionIndex + 1}:</strong>{" "}
+              {questionAnswerPairs[currentQuestionIndex].question}
+            </p>
+            <input
+              type="text"
+              value={answers[currentQuestionIndex]}
+              onChange={(e) =>
+                handleChange(currentQuestionIndex, e.target.value)
+              }
+              placeholder="Type your answer here"
+              className="extension-input-box"
+            />
+            <button
+              className="extension-button"
+              onClick={() => handleHighlightPen(currentQuestionIndex, true)}
             >
-              <p>
-                <strong>Question {index + 1}:</strong> {pair.question}
+              Highlight the Answer
+            </button>
+            <button
+              className="extension-button"
+              onClick={() => handleHighlightPen(currentQuestionIndex, false)}
+            >
+              Marker
+            </button>
+            <button
+              onClick={() => validateAnswer(currentQuestionIndex)}
+              className="extension-button"
+            >
+              Submit
+            </button>
+            {feedback[currentQuestionIndex]?.trim() && (
+              <p className="extension-feedback">
+                {feedback[currentQuestionIndex]}
               </p>
-            </div>
-            {activeQuestion === index && (
-              <div>
-                <input
-                  type="text"
-                  value={answers[index]}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  placeholder="Type your answer here"
-                  className="extension-input-box"
-                />
-                <button
-                  className="extension-button"
-                  onClick={() => handleHighlightPen(index, true)}
-                >
-                  Highlight the Answer
-                </button>
-                <button
-                  className="extension-button"
-                  onClick={() => handleHighlightPen(index, false)}
-                >
-                  Marker
-                </button>
-                <button
-                  onClick={() => validateAnswer(index)}
-                  className="extension-button"
-                >
-                  Submit
-                </button>
-                {feedback[index]?.trim() && (
-                  <p className="extension-feedback">{feedback[index]}</p>
-                )}
-                {submitted[index] && (
-                  <p className="extension-correct-answer">
-                    <strong>Correct Answer:</strong> {pair.answer}
-                  </p>
-                )}
-              </div>
+            )}
+            {submitted[currentQuestionIndex] && (
+              <p className="extension-correct-answer">
+                <strong>Correct Answer:</strong>{" "}
+                {questionAnswerPairs[currentQuestionIndex].answer}
+              </p>
             )}
           </div>
-        ))}
+        </div>
+      )}
     </div>
   );
 };

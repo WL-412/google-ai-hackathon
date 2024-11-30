@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Questionnaire from "./Questionnaire";
 import HistoryLibrary from "./HistoryLibrary";
 import MindMap from "./MindMap";
+import LoadingPage from "./LoadingPage";
 import "../styles/Sidebar.css";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -12,7 +13,7 @@ type SidebarProps = {
   setWidth: (width: number) => void;
 };
 
-type Page = "landing" | "library" | "hunt" | "mindmap";
+type Page = "landing" | "library" | "hunt" | "mindmap" | "loading";
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
@@ -25,6 +26,51 @@ const Sidebar: React.FC<SidebarProps> = ({
     title: string;
     entries: any[];
   } | null>(null);
+  const [questionAnswerPairs, setQuestionAnswerPairs] = useState<
+    { question: string; answer: string }[]
+  >([]);
+
+  const handleStartHunt = () => {
+    setCurrentPage("loading");
+
+    chrome.runtime.sendMessage({ action: "get_active_tab" }, (response) => {
+      if (response && response.tabId) {
+        chrome.runtime.sendMessage(
+          { action: "extract_content", tabId: response.tabId },
+          (contentResponse) => {
+            if (contentResponse && contentResponse.content) {
+              chrome.runtime.sendMessage(
+                {
+                  action: "summarize_page",
+                  content: contentResponse.content,
+                },
+                (summarizeResponse) => {
+                  if (
+                    summarizeResponse &&
+                    summarizeResponse.questionAnswerPairs
+                  ) {
+                    setQuestionAnswerPairs(
+                      summarizeResponse.questionAnswerPairs
+                    );
+                    setCurrentPage("hunt");
+                  } else {
+                    console.error("Failed to generate questions");
+                    setCurrentPage("landing");
+                  }
+                }
+              );
+            } else {
+              console.error("Failed to extract content");
+              setCurrentPage("landing");
+            }
+          }
+        );
+      } else {
+        console.error("Failed to get active tab:", chrome.runtime.lastError);
+        setCurrentPage("landing");
+      }
+    });
+  };
 
   const renderPage = () => {
     switch (currentPage) {
@@ -38,10 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             >
               My Library
             </button>
-            <button
-              className="extension-button"
-              onClick={() => setCurrentPage("hunt")}
-            >
+            <button className="extension-button" onClick={handleStartHunt}>
               Start a Hunt
             </button>
           </div>
@@ -57,7 +100,12 @@ const Sidebar: React.FC<SidebarProps> = ({
           />
         );
       case "hunt":
-        return <Questionnaire onBack={() => setCurrentPage("landing")} />;
+        return (
+          <Questionnaire
+            onBack={() => setCurrentPage("landing")}
+            questionAnswerPairs={questionAnswerPairs}
+          />
+        );
       case "mindmap":
         return (
           selectedSiteData && (
@@ -77,6 +125,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
           )
         );
+      case "loading":
+        return <LoadingPage />;
       default:
         return null;
     }
