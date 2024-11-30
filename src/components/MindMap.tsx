@@ -1,23 +1,68 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   ReactFlow,
   applyNodeChanges,
   applyEdgeChanges,
   EdgeChange,
+  Node,
+  Edge,
+  Handle,
+  Position,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import FitScreenIcon from "@mui/icons-material/FitScreen";
 
 interface MindMapProps {
-  siteData: { title: string; entries: any[] };
+  siteData: { title: string; entries: any[]; siteUrl?: string };
   onGoBack: () => void;
   onEnlarge: () => void;
 }
+const AnswerNode = ({
+  data,
+}: {
+  data: {
+    label: string;
+    onContentChange: (content: string) => void;
+    onLearnMore: () => void;
+  };
+}) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedContent, setEditedContent] = useState(data.label);
+
+  const handleSave = () => {
+    setIsEditing(false);
+    data.onContentChange(editedContent);
+  };
+
+  return (
+    <div className="react-flow__node-default">
+      <Handle type="target" position={Position.Left} />
+      {isEditing ? (
+        <div>
+          <textarea
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+            style={{ width: "100%", height: "60px" }}
+          />
+          <button onClick={handleSave}>Save</button>
+        </div>
+      ) : (
+        <div>
+          <div>{data.label}</div>
+          <button onClick={() => setIsEditing(true)}>Edit</button>
+          <button onClick={data.onLearnMore}>Learn More</button>
+        </div>
+      )}
+      <Handle type="source" position={Position.Right} />
+    </div>
+  );
+};
 
 const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
-  const [nodes, setNodes] = useState(() => generateInitialNodes(siteData));
-  const [edges, setEdges] = useState(() => generateInitialEdges(siteData));
+  const [currentSiteData, setCurrentSiteData] = useState(siteData);
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
   const [expandedAnswers, setExpandedAnswers] = useState<Set<string>>(
     new Set()
   );
@@ -25,27 +70,28 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
     new Set()
   );
 
-  const onNodesChange = useCallback(
-    (changes: any[]) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
-      changes.forEach((change) => {
-        if (change.type === "select" && change.selected) {
-          if (change.id.startsWith("question-")) {
-            handleQuestionClick(change.id);
-          } else if (change.id.startsWith("answer-")) {
-            handleAnswerClick(change.id);
-          }
+  useEffect(() => {
+    if (chrome && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get("history", (result) => {
+        const history = result.history || {};
+
+        const siteUrl = siteData.siteUrl || window.location.origin;
+
+        if (history[siteUrl]) {
+          setCurrentSiteData(history[siteUrl]);
+        } else {
+          setCurrentSiteData(siteData);
         }
       });
-    },
-    [setNodes]
-  );
+    } else {
+      setCurrentSiteData(siteData);
+    }
+  }, [siteData]);
 
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange<{ id: string; source: string; target: string }>[]) =>
-      setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
+  useEffect(() => {
+    setNodes(generateInitialNodes());
+    setEdges(generateInitialEdges());
+  }, [currentSiteData, expandedAnswers, expandedExplore]);
 
   const handleQuestionClick = (id: string) => {
     const questionIndex = id.split("-")[1];
@@ -57,34 +103,6 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
       } else {
         newSet.add(id);
       }
-
-      setNodes((currentNodes) =>
-        currentNodes.map((node) => {
-          if (node.id === `answer-${questionIndex}`) {
-            return { ...node, hidden: !newSet.has(id) };
-          }
-          if (node.id === `explore-${questionIndex}`) {
-            return { ...node, hidden: true };
-          }
-          return node;
-        })
-      );
-
-      setEdges((currentEdges) =>
-        currentEdges.map((edge) => {
-          if (
-            edge.id === `e-question-${questionIndex}-answer-${questionIndex}`
-          ) {
-            return { ...edge, hidden: !newSet.has(id) };
-          }
-          if (
-            edge.id === `e-answer-${questionIndex}-explore-${questionIndex}`
-          ) {
-            return { ...edge, hidden: true };
-          }
-          return edge;
-        })
-      );
 
       if (!newSet.has(id)) {
         setExpandedExplore((prevExplore) => {
@@ -98,7 +116,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
     });
   };
 
-  const handleAnswerClick = (id: string) => {
+  const handleLearnMoreClick = (id: string) => {
     const answerIndex = id.split("-")[1];
 
     setExpandedExplore((prev) => {
@@ -108,27 +126,150 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
       } else {
         newSet.add(id);
       }
-
-      setNodes((currentNodes) =>
-        currentNodes.map((node) => {
-          if (node.id === `explore-${answerIndex}`) {
-            return { ...node, hidden: !newSet.has(id) };
-          }
-          return node;
-        })
-      );
-
-      setEdges((currentEdges) =>
-        currentEdges.map((edge) => {
-          if (edge.id === `e-answer-${answerIndex}-explore-${answerIndex}`) {
-            return { ...edge, hidden: !newSet.has(id) };
-          }
-          return edge;
-        })
-      );
-
       return newSet;
     });
+  };
+
+  const handleAnswerContentChange = (index: number, newContent: string) => {
+    setNodes((currentNodes) =>
+      currentNodes.map((node) => {
+        if (node.id === `answer-${index}`) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              label: newContent,
+            },
+          };
+        }
+        return node;
+      })
+    );
+
+    setCurrentSiteData((prevSiteData) => {
+      const newEntries = [...prevSiteData.entries];
+      newEntries[index] = {
+        ...newEntries[index],
+        userAnswer: newContent,
+      };
+      const updatedSiteData = {
+        ...prevSiteData,
+        entries: newEntries,
+      };
+      saveDataToChromeStorage({
+        ...updatedSiteData,
+        siteUrl: window.location.origin,
+      });
+
+      return updatedSiteData;
+    });
+  };
+
+  const saveDataToChromeStorage = (data: {
+    entries?: any[];
+    title?: string;
+    siteUrl: any;
+  }) => {
+    if (chrome && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get("history", (result) => {
+        const history = result.history || {};
+
+        const siteUrl = data.siteUrl || window.location.origin;
+
+        history[siteUrl] = data;
+
+        chrome.storage.local.set({ history }, () => {
+          console.log(`Data saved to Chrome storage for ${siteUrl}`);
+        });
+      });
+    }
+  };
+
+  const generateInitialNodes = () => {
+    const nodes: Node[] = [
+      {
+        id: "root",
+        data: { label: currentSiteData.title },
+        position: { x: -300, y: 300 },
+      },
+      ...currentSiteData.entries.map((entry, index) => ({
+        id: `question-${index}`,
+        data: { label: entry.question },
+        position: { x: -100, y: (index + 1) * 150 },
+        style: { cursor: "pointer" },
+      })),
+      ...currentSiteData.entries.flatMap((entry, index) => [
+        {
+          id: `answer-${index}`,
+          type: "answerNode",
+          data: {
+            label: entry.userAnswer || entry.answer,
+            onLearnMore: () => handleLearnMoreClick(`answer-${index}`),
+            onContentChange: (newContent: string) =>
+              handleAnswerContentChange(index, newContent),
+          },
+          position: { x: 100, y: (index + 1) * 150 },
+          hidden: !expandedAnswers.has(`question-${index}`),
+        },
+        {
+          id: `explore-${index}`,
+          data: { label: entry.explore },
+          position: { x: 300, y: (index + 1) * 150 },
+          hidden: !expandedExplore.has(`answer-${index}`),
+          style: { width: "300px" },
+        },
+      ]),
+    ];
+    return nodes;
+  };
+
+  const generateInitialEdges = () => {
+    const edges: Edge[] = [
+      ...currentSiteData.entries.map((_, index) => ({
+        id: `e-root-question-${index}`,
+        source: "root",
+        target: `question-${index}`,
+      })),
+      ...currentSiteData.entries.flatMap((_, index) => [
+        {
+          id: `e-question-${index}-answer-${index}`,
+          source: `question-${index}`,
+          target: `answer-${index}`,
+          hidden: !expandedAnswers.has(`question-${index}`),
+        },
+        {
+          id: `e-answer-${index}-explore-${index}`,
+          source: `answer-${index}`,
+          target: `explore-${index}`,
+          hidden: !expandedExplore.has(`answer-${index}`),
+        },
+      ]),
+    ];
+    return edges;
+  };
+
+  const onNodesChange = useCallback(
+    (changes: any[]) => {
+      setNodes((nds) => applyNodeChanges(changes, nds));
+      changes.forEach((change) => {
+        if (change.type === "select" && change.selected) {
+          if (change.id.startsWith("question-")) {
+            handleQuestionClick(change.id);
+          }
+        }
+      });
+    },
+    [setNodes, expandedAnswers, expandedExplore]
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) =>
+      setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  );
+
+  const nodeTypes = {
+    answerNode: AnswerNode,
   };
 
   return (
@@ -157,69 +298,12 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          nodeTypes={nodeTypes}
           fitView
         />
       </div>
     </div>
   );
-};
-
-const generateInitialNodes = (siteData: { title: string; entries: any[] }) => {
-  const nodes = [
-    {
-      id: "root",
-      data: { label: siteData.title },
-      position: { x: -300, y: 300 },
-    },
-    ...siteData.entries.map((entry, index) => ({
-      id: `question-${index}`,
-      data: { label: entry.question },
-      position: { x: -100, y: (index + 1) * 150 },
-      style: { cursor: "pointer" },
-    })),
-    ...siteData.entries.flatMap((entry, index) => [
-      {
-        id: `answer-${index}`,
-        data: { label: entry.userAnswer },
-        position: { x: 100, y: (index + 1) * 150 },
-        hidden: true,
-        style: { cursor: "pointer" },
-      },
-      {
-        id: `explore-${index}`,
-        data: { label: entry.explore },
-        position: { x: 300, y: (index + 1) * 150 },
-        hidden: true,
-        style: { width: "300px" },
-      },
-    ]),
-  ];
-  return nodes;
-};
-
-const generateInitialEdges = (siteData: { title: string; entries: any[] }) => {
-  const edges = [
-    ...siteData.entries.map((_, index) => ({
-      id: `e-root-question-${index}`,
-      source: "root",
-      target: `question-${index}`,
-    })),
-    ...siteData.entries.flatMap((_, index) => [
-      {
-        id: `e-question-${index}-answer-${index}`,
-        source: `question-${index}`,
-        target: `answer-${index}`,
-        hidden: true,
-      },
-      {
-        id: `e-answer-${index}-explore-${index}`,
-        source: `answer-${index}`,
-        target: `explore-${index}`,
-        hidden: true,
-      },
-    ]),
-  ];
-  return edges;
 };
 
 export default MindMap;
