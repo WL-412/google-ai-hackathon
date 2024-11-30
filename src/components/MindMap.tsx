@@ -63,12 +63,8 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
   const [currentSiteData, setCurrentSiteData] = useState(siteData);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-  const [expandedAnswers, setExpandedAnswers] = useState<Set<string>>(
-    new Set()
-  );
-  const [expandedExplore, setExpandedExplore] = useState<Set<string>>(
-    new Set()
-  );
+  const [expandedAnswer, setExpandedAnswer] = useState<string | null>(null);
+  const [expandedExplore, setExpandedExplore] = useState<string | null>(null);
 
   useEffect(() => {
     if (chrome && chrome.storage && chrome.storage.local) {
@@ -91,43 +87,19 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
   useEffect(() => {
     setNodes(generateInitialNodes());
     setEdges(generateInitialEdges());
-  }, [currentSiteData, expandedAnswers, expandedExplore]);
+  }, [currentSiteData, expandedAnswer, expandedExplore]);
 
   const handleQuestionClick = (id: string) => {
-    const questionIndex = id.split("-")[1];
-
-    setExpandedAnswers((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-
-      if (!newSet.has(id)) {
-        setExpandedExplore((prevExplore) => {
-          const exploreSet = new Set(prevExplore);
-          exploreSet.delete(`answer-${questionIndex}`);
-          return exploreSet;
-        });
-      }
-
-      return newSet;
-    });
+    setExpandedAnswer((prevExpandedAnswer) =>
+      prevExpandedAnswer === id ? null : id
+    );
+    setExpandedExplore(null);
   };
 
   const handleLearnMoreClick = (id: string) => {
-    const answerIndex = id.split("-")[1];
-
-    setExpandedExplore((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
+    setExpandedExplore((prevExpandedExplore) =>
+      prevExpandedExplore === id ? null : id
+    );
   };
 
   const handleAnswerContentChange = (index: number, newContent: string) => {
@@ -156,6 +128,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
         ...prevSiteData,
         entries: newEntries,
       };
+
       saveDataToChromeStorage({
         ...updatedSiteData,
         siteUrl: window.location.origin,
@@ -209,13 +182,13 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
               handleAnswerContentChange(index, newContent),
           },
           position: { x: 100, y: (index + 1) * 150 },
-          hidden: !expandedAnswers.has(`question-${index}`),
+          hidden: expandedAnswer !== `question-${index}`,
         },
         {
           id: `explore-${index}`,
           data: { label: entry.explore },
           position: { x: 300, y: (index + 1) * 150 },
-          hidden: !expandedExplore.has(`answer-${index}`),
+          hidden: expandedExplore !== `answer-${index}`,
           style: { width: "300px" },
         },
       ]),
@@ -235,13 +208,13 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
           id: `e-question-${index}-answer-${index}`,
           source: `question-${index}`,
           target: `answer-${index}`,
-          hidden: !expandedAnswers.has(`question-${index}`),
+          hidden: expandedAnswer !== `question-${index}`,
         },
         {
           id: `e-answer-${index}-explore-${index}`,
           source: `answer-${index}`,
           target: `explore-${index}`,
-          hidden: !expandedExplore.has(`answer-${index}`),
+          hidden: expandedExplore !== `answer-${index}`,
         },
       ]),
     ];
@@ -259,7 +232,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
         }
       });
     },
-    [setNodes, expandedAnswers, expandedExplore]
+    [setNodes, expandedAnswer, expandedExplore]
   );
 
   const onEdgesChange = useCallback(
