@@ -57,6 +57,7 @@ const AnswerNode = ({ data }: { data: DataType }) => {
     </div>
   );
 };
+
 const ExploreNode = ({
   data,
 }: {
@@ -179,11 +180,13 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
     const nodes: Node[] = [
       {
         id: "root",
+        type: "defaultNode",
         data: { label: currentSiteData.title },
         position: { x: -300, y: 300 },
       },
       ...currentSiteData.entries.map((entry, index) => ({
         id: `question-${index}`,
+        type: "defaultNode",
         data: { label: entry.question },
         position: { x: -100, y: (index + 1) * 150 },
         style: { cursor: "pointer" },
@@ -262,7 +265,16 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
     [setEdges]
   );
 
+  const DefaultNode = ({ data }: { data: DataType }) => (
+    <div className="react-flow__node-default">
+      <Handle type="target" position={Position.Left} />
+      <div>{data.label}</div>
+      <Handle type="source" position={Position.Right} />
+    </div>
+  );
+
   const nodeTypes = {
+    defaultNode: DefaultNode,
     answerNode: AnswerNode,
     exploreNode: ExploreNode,
   };
@@ -294,6 +306,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
+          defaultEdgeOptions={{ type: "smoothstep" }}
           fitView
         />
       </div>
