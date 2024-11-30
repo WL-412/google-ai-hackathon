@@ -83,71 +83,63 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     // Reset the session to ensure it starts fresh for new content
     reset().then(() => {
-      runPrompt(
-        `Generate 5 questions and answers based on the key points of the article. 
-        Structure the response like this "question: {questions} answer: {answer}" no other text or formatting.`,
-        params,
-        content
-      )
+        runPrompt(
+            `Generate 5 questions and answers based on the key points of the article. 
+            Structure the response like this "question: {questions} answer: {answer}" no other text or formatting.`,
+            params,
+            content
+        )
         .then((summary) => {
-          const questionAnswerPairs = summary
-            .split("\n\n")
-            .map((block) => {
-              const lines = block.split("\n").map((line) => line.trim());
-              const questionLine = lines.find((line) =>
-                line.startsWith("question:")
-              );
-              const answerLine = lines.find((line) =>
-                line.startsWith("answer:")
-              );
+            const questionAnswerPairs = summary
+                .split("\n\n")
+                .map((block) => {
+                    const lines = block.split("\n").map((line) => line.trim());
+                    const questionLine = lines.find((line) =>
+                        line.startsWith("question:")
+                    );
+                    const answerLine = lines.find((line) =>
+                        line.startsWith("answer:")
+                    );
 
-              if (questionLine && answerLine) {
-                const question = questionLine.replace(/^question:\s*/i, "").trim();
-                const answer = answerLine.replace(/^answer:\s*/i, "").trim();
-                return { question, answer, userAnswer: null, explore: null };
-              }
-              return null;
-            })
-            .filter((pair) => pair !== null);
+                    if (questionLine && answerLine) {
+                        const question = questionLine.replace(/^question:\s*/i, "").trim();
+                        const answer = answerLine.replace(/^answer:\s*/i, "").trim();
+                        return { question, answer, userAnswer: null, explore: null };
+                    }
+                    return null;
+                })
+                .filter((pair) => pair !== null);
 
-          // Store the questions in the history
-          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0]?.url) {
-              const siteUrl = new URL(tabs[0].url).origin;
-              const siteTitle = tabs[0].title;
-              chrome.storage.local.get("history", (result) => {
-                const history = result.history || {};
+            // Store the questions in the history
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                if (tabs[0]?.url) {
+                    const siteUrl = new URL(tabs[0].url).origin;
+                    const siteTitle = tabs[0].title;
+                    chrome.storage.local.get("history", (result) => {
+                        const history = result.history || {};
 
-                if (!history[siteUrl]) {
-                  history[siteUrl] = { title: siteTitle, entries: [] };
+                        history[siteUrl] = { title: siteTitle, entries: questionAnswerPairs };
+
+                        chrome.storage.local.set({ history }, () => {
+                            console.log(`History updated for ${siteUrl}:`, history[siteUrl]);
+                        });
+                    });
                 }
+            });
 
-                // Add questions without user answers
-                questionAnswerPairs.forEach((pair) => {
-                  history[siteUrl].entries.push(pair);
-                });
-
-                // Save the updated history
-                chrome.storage.local.set({ history }, () => {
-                  console.log(`History updated for ${siteUrl}:`, history[siteUrl]);
-                });
-              });
-            }
-          });
-
-          // Send the question-answer pairs back to the frontend
-          chrome.storage.local.set({ questionAnswerPairs }, () => {
-            console.log("Question answer pairs stored", questionAnswerPairs);
-            sendResponse({ success: true, questionAnswerPairs });
-          });
+            // Send the question-answer pairs back to the frontend
+            chrome.storage.local.set({ questionAnswerPairs }, () => {
+                console.log("Question answer pairs stored", questionAnswerPairs);
+                sendResponse({ success: true, questionAnswerPairs });
+            });
         })
         .catch((error) => {
-          console.error("Error summarizing content:", error);
-          sendResponse({ success: false, error });
+            console.error("Error summarizing content:", error);
+            sendResponse({ success: false, error });
         });
     });
     return true;
-  } else if (message.action === "validate_answer") {
+} else if (message.action === "validate_answer") {
     const { question, userAnswer, index } = message;
 
     validateAnswer(question, userAnswer)
