@@ -84,7 +84,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Reset the session to ensure it starts fresh for new content
     reset().then(() => {
         runPrompt(
-            `Generate 5 questions and answers based on the key points of the article. 
+            `Generate 8 questions and answers based on the key points of the article. 
             Structure the response like this "question: {questions} answer: {answer}" no other text or formatting.`,
             params,
             content
