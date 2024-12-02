@@ -30,13 +30,19 @@ module.exports = {
           "css-loader"
         ],
       },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: "asset/resource", // Use "file-loader" if using Webpack 4
+        generator: {
+          filename: "images/[name][hash][ext]",
+        },
+      },
     ],
   },
   plugins: [
     new CopyPlugin({
       patterns: [
         { from: "manifest.json", to: "../manifest.json" },
-        { from: "public", to: "../public" },
       ],
     }),
     ...getHtmlPlugins(["index", "popup"]),

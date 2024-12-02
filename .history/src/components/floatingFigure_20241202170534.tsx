@@ -4,15 +4,14 @@ import React from 'react';
 
 const FloatingFigure: React.FC = () => {
 
-
-  const imageUrl = chrome.runtime.getURL("./public/Vector.png");
+  const exampleImage = require('../assets/Vector.png');
 
   return (
     <div
       style={{
         width: '50px',
         height: '50px',
-        backgroundImage: `url(${imageUrl})`,
+        backgroundImage: `url('./images/Vectorxxx.png')`,
         backgroundSize: 'cover',
         borderRadius: '50%',
         display: 'inline-block',

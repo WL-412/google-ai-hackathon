@@ -5,7 +5,7 @@ import React from 'react';
 const FloatingFigure: React.FC = () => {
 
 
-  const imageUrl = chrome.runtime.getURL("./public/Vector.png");
+  const imageUrl = chrome.runtime.getURL("./images/Vector.png");
 
   return (
     <div

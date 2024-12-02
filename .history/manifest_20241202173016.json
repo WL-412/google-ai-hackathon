@@ -30,15 +30,5 @@
         "js/index.js"
       ]
     }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "public/*.png"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
   ]
 }

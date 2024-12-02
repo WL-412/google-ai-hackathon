@@ -30,6 +30,13 @@ module.exports = {
           "css-loader"
         ],
       },
+      {
+        test: /\.(png|jpe?g|gif|svg)$/i,
+        type: "asset/resource", // Use "file-loader" if using Webpack 4
+        generator: {
+          filename: "images/[name][ext]",
+        },
+      },
     ],
   },
   plugins: [
