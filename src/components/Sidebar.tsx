@@ -5,6 +5,7 @@ import MindMap from "./MindMap";
 import LoadingPage from "./LoadingPage";
 import "../styles/Sidebar.css";
 import CloseIcon from "@mui/icons-material/Close";
+import FinishQuizPage from "./FinishQuizPage";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -13,7 +14,7 @@ type SidebarProps = {
   setWidth: (width: number) => void;
 };
 
-type Page = "landing" | "library" | "hunt" | "mindmap" | "loading";
+type Page = "landing" | "library" | "hunt" | "mindmap" | "loading" | "finish";
 
 const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
@@ -29,6 +30,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [questionAnswerPairs, setQuestionAnswerPairs] = useState<
     { question: string; answer: string }[]
   >([]);
+  const [points, setPoints] = useState<number>(0);
+
+  const handleFinishHunt = () => {
+    setPoints(questionAnswerPairs.length * 25);
+    setCurrentPage("finish");
+  };
 
   const handleStartHunt = () => {
     setCurrentPage("loading");
@@ -102,8 +109,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       case "hunt":
         return (
           <Questionnaire
-            onBack={() => setCurrentPage("landing")}
             questionAnswerPairs={questionAnswerPairs}
+            onFinish={handleFinishHunt}
           />
         );
       case "mindmap":
@@ -127,6 +134,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         );
       case "loading":
         return <LoadingPage />;
+      case "finish":
+        return (
+          <FinishQuizPage
+            onBackToHome={() => setCurrentPage("landing")}
+            onViewSummary={() => setCurrentPage("library")}
+            questionsCount={8}
+            points={points}
+          />
+        );
       default:
         return null;
     }

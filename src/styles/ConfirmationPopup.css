@@ -1,0 +1,39 @@
+.confirmation-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.popup-content {
+    text-align: center;
+}
+
+.popup-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.cancel-button,
+.confirm-button {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.cancel-button {
+    background-color: #f3f3f3;
+    color: #333;
+}
+
+.confirm-button {
+    background-color: #000;
+    color: #fff;
+}

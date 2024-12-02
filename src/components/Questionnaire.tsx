@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Questionnaire.css";
+import ConfirmationPopup from "./ConfirmationPopup";
 
 interface QuestionnaireProps {
-  onBack: () => void;
   questionAnswerPairs: { question: string; answer: string }[];
+  onFinish: () => void;
 }
 
 const Questionnaire: React.FC<QuestionnaireProps> = ({
-  onBack,
   questionAnswerPairs,
+  onFinish,
 }) => {
   const [answers, setAnswers] = useState<string[]>(
     Array(questionAnswerPairs.length).fill("")
@@ -20,6 +21,17 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const [submitted, setSubmitted] = useState<boolean[]>(
     Array(questionAnswerPairs.length).fill(false)
   );
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleFinish = () => {
+    setShowPopup(true);
+  };
+
+  const handleConfirmFinish = () => {
+    setShowPopup(false);
+    onFinish();
+  };
 
   useEffect(() => {
     setAnswers(Array(questionAnswerPairs.length).fill(""));
@@ -123,15 +135,14 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   };
 
   return (
-    <div>
-      <button onClick={onBack} className="back-button">
-        Back
-      </button>
-      <h3>LET'S DO THIS</h3>
+    <div className="quiz-container">
+      <div className="quiz-header">
+        <h1>LET'S DO THIS</h1>
+      </div>
       {questionAnswerPairs.length > 0 && (
-        <div>
+        <div className="quiz-content">
           <div className="question-navigation">
-            {questionAnswerPairs.slice(0, 5).map((_, index) => (
+            {questionAnswerPairs.slice(0, 8).map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentQuestionIndex(index)}
@@ -144,51 +155,76 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             ))}
           </div>
           <div className="extension-question-container">
-            <p>
-              <strong>Question {currentQuestionIndex + 1}:</strong>{" "}
+            <p className="question-title">
               {questionAnswerPairs[currentQuestionIndex].question}
             </p>
-            <input
-              type="text"
+            <textarea
               value={answers[currentQuestionIndex]}
               onChange={(e) =>
                 handleChange(currentQuestionIndex, e.target.value)
               }
-              placeholder="Type your answer here"
-              className="extension-input-box"
+              placeholder="Enter your answer here"
+              className="answer-input"
             />
-            <button
-              className="extension-button"
-              onClick={() => handleHighlightPen(currentQuestionIndex, true)}
-            >
-              Highlight the Answer
-            </button>
-            <button
-              className="extension-button"
-              onClick={() => handleHighlightPen(currentQuestionIndex, false)}
-            >
-              Marker
-            </button>
-            <button
-              onClick={() => validateAnswer(currentQuestionIndex)}
-              className="extension-button"
-              disabled={!answers[currentQuestionIndex]?.trim()}
-            >
-              Submit
-            </button>
-            {feedback[currentQuestionIndex]?.trim() && (
-              <p className="extension-feedback">
-                {feedback[currentQuestionIndex]}
-              </p>
-            )}
-            {submitted[currentQuestionIndex] && (
-              <p className="extension-correct-answer">
-                <strong>Correct Answer:</strong>{" "}
+            <div className="actions">
+              <button
+                className="action-button"
+                onClick={() => handleHighlightPen(currentQuestionIndex, true)}
+              >
+                Copy Pen
+              </button>
+              <button
+                onClick={() => validateAnswer(currentQuestionIndex)}
+                className="submit-button"
+                disabled={!answers[currentQuestionIndex]?.trim()}
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+
+          {submitted[currentQuestionIndex] ? (
+            <div className="tips-section">
+              <p className="score-display">{feedback[currentQuestionIndex]}</p>
+              <p className="correct-answer">
+                The correct answer is:{" "}
                 {questionAnswerPairs[currentQuestionIndex].answer}
               </p>
-            )}
+            </div>
+          ) : (
+            <div className="tips-section">
+              <p>
+                <strong>Tips</strong>
+              </p>
+              <p>
+                Use the <strong>Highlighter</strong> to highlight notes while
+                you read.
+              </p>
+              <p>
+                Use the <strong>Copy Pen</strong> to copy text to a specific
+                question.
+              </p>
+            </div>
+          )}
+
+          <div className="footer">
+            <button
+              className="highlight-button"
+              onClick={() => handleHighlightPen(currentQuestionIndex, false)}
+            >
+              Highlighter
+            </button>
+            <button className="finish-button" onClick={handleFinish}>
+              Finish
+            </button>
           </div>
         </div>
+      )}
+      {showPopup && (
+        <ConfirmationPopup
+          onClose={() => setShowPopup(false)}
+          onConfirm={handleConfirmFinish}
+        />
       )}
     </div>
   );

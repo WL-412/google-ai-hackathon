@@ -31,9 +31,7 @@
 }
 
 .extension-sidebar-content {
-    padding: 10px;
     overflow-y: auto;
-    height: calc(100% - 40px);
 }
 
 .extension-sidebar-content h3 {
