@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/ConfirmationPopup.css";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface ConfirmationPopupProps {
   onClose: () => void;
@@ -14,7 +15,7 @@ const ConfirmationPopup: React.FC<ConfirmationPopupProps> = ({
     <div className="confirmation-popup">
       <div className="popup-content">
         <button className="close-button" onClick={onClose}>
-          ✕
+          <CloseIcon />
         </button>
         <h2>Are you sure you want to finish this hunt?</h2>
         <p>You can't come back and edit this hunt once you hit yes.</p>
