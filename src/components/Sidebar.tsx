@@ -104,6 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               setSelectedSiteData(siteData);
               setCurrentPage("mindmap");
             }}
+            onStartHunt={handleStartHunt}
           />
         );
       case "hunt":
