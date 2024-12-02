@@ -165,7 +165,7 @@ function createHighlightFragment(range, xpath, includeLabel) {
       }
 
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      confirm("Please Select Sentences Within the Same Paragraph.");
+      confirm("cannot select");
       // For element nodes, preserve their structure and process their children
       const clonedElement = node.cloneNode(true);
       highlightElementContents(clonedElement);
