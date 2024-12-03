@@ -1,15 +1,16 @@
 /* Title Image in the Center */
 .title-container {
   position: absolute;
-  top: 45%;
+  top: 40%;
+  /* Slightly adjusted for better alignment on smaller screens */
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
 }
 
 .title-image {
-  max-width: 60%;
-  /* Adjust size as needed */
+  max-width: 50%;
+  /* Adjust size for better responsiveness */
   height: auto;
 }
 
@@ -23,25 +24,22 @@
   text-overflow: ellipsis;
 }
 
-
 /* Button 1: My Library */
 .button-library {
   position: absolute;
   z-index: 10;
   width: 252px;
   height: 59px;
-  top: 580px;
-  left: 74px;
-  gap: 0px;
+  bottom: 150px;
+  /* Use bottom instead of top for better responsiveness */
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 10px;
   background: #FFFFFF;
-  /* Default button color */
   color: #000000;
   border: none;
   font-size: 16px;
   font-weight: bold;
-  opacity: 1;
-  /* Change this to 0 if it's meant to be fully transparent */
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
 }
@@ -49,9 +47,7 @@
 .button-library:hover {
   transform: scale(1.05);
   background-color: #FFFFFF;
-  /* Change background to match the second button */
   color: #000000;
-  /* Invert text color to white for contrast */
 }
 
 /* Button 2: Start a Hunt */
@@ -60,18 +56,16 @@
   z-index: 10;
   width: 252px;
   height: 59px;
-  top: 650px;
-  left: 74px;
-  gap: 0px;
+  bottom: 80px;
+  /* Use bottom for relative positioning */
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 10px;
   background: #000000;
-  /* Default button color */
   color: white;
   border: none;
   font-size: 16px;
   font-weight: bold;
-  opacity: 1;
-  /* Change this to 0 if it's meant to be fully transparent */
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
 }
@@ -79,9 +73,7 @@
 .button-hunt:hover {
   transform: scale(1.05);
   background-color: #000000;
-  /* Change background to match the first button */
   color: #FFFFFF;
-  /* Invert text color to black for contrast */
 }
 
 /* Background Figures */
@@ -94,23 +86,68 @@
 
 .figure-top-right {
   top: 10%;
-  right: 0%;
-  width: 100px;
-  height: 100px;
+  right: 5%;
+  /* Adjusted for more proportional spacing */
+  width: 80px;
+  /* Scaled down for responsiveness */
+  height: 80px;
 }
 
 .figure-above-button {
-  top: 480px;
+  bottom: 220px;
+  /* Position relative to buttons for better scaling */
   left: 50%;
   transform: translateX(-50%);
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  /* Adjusted size */
+  height: auto;
+  /* Maintain aspect ratio */
 }
 
 .figure-listen-left {
   top: 10%;
   left: 10%;
   transform: translateX(-50%);
-  width: 22%;
-  height: 22%;
+  width: 20%;
+  /* Adjust size for responsiveness */
+  height: auto;
+  /* Maintain aspect ratio */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .title-container {
+    top: 35%;
+  }
+
+  .title-image {
+    max-width: 70%;
+    /* Scale down for smaller screens */
+  }
+
+  .button-library,
+  .button-hunt {
+    width: 200px;
+    /* Reduce button width */
+    height: 50px;
+    /* Reduce button height */
+    font-size: 14px;
+    /* Adjust font size */
+  }
+
+  .figure-top-right {
+    width: 60px;
+    /* Smaller figure size */
+    height: 60px;
+  }
+
+  .figure-above-button {
+    width: 90px;
+    /* Smaller figure size */
+  }
+
+  .figure-listen-left {
+    width: 15%;
+    /* Smaller size for smaller screens */
+  }
 }

@@ -99,12 +99,20 @@
   height: 100px;
 }
 
-.figure-above-button {
+/* .figure-above-button {
   top: 480px;
   left: 50%;
   transform: translateX(-50%);
   width: 100px;
   height: 100px;
+} */
+
+.figure-above-button {
+  top: 75%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20%;
+  height: 20%;
 }
 
 .figure-listen-left {
