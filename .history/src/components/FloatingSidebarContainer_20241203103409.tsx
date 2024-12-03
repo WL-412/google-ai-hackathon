@@ -58,7 +58,7 @@ const FloatingSidebarContainer: React.FC = () => {
           style={{
             position: "absolute",
             left: `${position.x - sidebarWidth}px`,
-            top: `${position.y - 700}px`,
+            top: `${position.y - 1000}px`,
           }}
         >
           <Sidebar
