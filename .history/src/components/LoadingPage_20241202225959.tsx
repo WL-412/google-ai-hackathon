@@ -11,6 +11,7 @@ const LoadingPage: React.FC = () => {
       justifyContent: 'center',
       alignItems: 'center',
       height: '100vh',
+      backgroundColor: '#EBF495',
     }}>
       <Lottie
         loop
@@ -22,8 +23,10 @@ const LoadingPage: React.FC = () => {
         }}
       />
       <p style={{
+        color: '#6e7926',
         fontSize: '18px',
         textAlign: 'center',
+        marginTop: '20px',
       }}>
         Preparing your scavenger hunt...
       </p>

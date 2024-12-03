@@ -2,7 +2,7 @@ import React from "react";
 import Lottie from "react-lottie-player";
 
 const LoadingPage: React.FC = () => {
-  const animationPath = chrome.runtime.getURL('./public/anime/小五.json');
+  const animationPath = chrome.runtime.getURL('./public/anime/小1.gif');
 
   return (
     <div style={{
@@ -12,14 +12,10 @@ const LoadingPage: React.FC = () => {
       alignItems: 'center',
       height: '100vh',
     }}>
-      <Lottie
-        loop
-        path={animationPath}
-        play
-        style={{
-          width: '50%',
-          height: '50%',
-        }}
+      <img
+        src={chrome.runtime.getURL('./public/anime/小1.gif')}
+        alt="Animated GIF"
+        style={{ width: '50%', height: '22%' }}
       />
       <p style={{
         fontSize: '18px',
