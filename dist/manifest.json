@@ -34,7 +34,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "public/*.png"
+        "public/*.png",
+        "public/*.json"
       ],
       "matches": [
         "<all_urls>"

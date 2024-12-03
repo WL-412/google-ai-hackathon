@@ -1,16 +1,28 @@
 // FloatingFigure.tsx
 import React from 'react';
 import Lottie from 'react-lottie-player';
+import { useEffect, useState } from 'react';
 
 
 
 const FloatingFigure: React.FC = () => {
+  const [animationData, setAnimationData] = useState<any>(null);
 
 
+  const imageUrl = chrome.runtime.getURL("./public/Vector.png");
 
 
-  const animationPath = chrome.runtime.getURL('./public/小五动画.json');
+  useEffect(() => {
+    const animationPath = chrome.runtime.getURL('./public/小五动画.json');
+    fetch(animationPath)
+      .then((response) => response.json())
+      .then((data) => setAnimationData(data))
+      .catch((error) => console.error('Error loading Lottie animation:', error));
+  }, []);
 
+  if (!animationData) {
+    return null; // Or a loader/placeholder while the animation is loading
+  }
   return (
     <div
       style={{
@@ -26,7 +38,7 @@ const FloatingFigure: React.FC = () => {
     >
       <Lottie
         loop
-        path={animationPath} // Use the path directly
+        animationData={animationData}
         play
         style={{
           width: '100%',

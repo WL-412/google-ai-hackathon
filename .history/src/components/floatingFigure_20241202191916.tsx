@@ -7,6 +7,7 @@ import Lottie from 'react-lottie-player';
 const FloatingFigure: React.FC = () => {
 
 
+  const imageUrl = chrome.runtime.getURL("./public/Vector.png");
 
 
   const animationPath = chrome.runtime.getURL('./public/小五动画.json');
