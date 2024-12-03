@@ -84,7 +84,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     switch (currentPage) {
       case "landing":
         return (
-          <LandingPage setCurrentPage={setCurrentPage} handleStartHunt={handleStartHunt} />
+          <LandingPage
+            setCurrentPage={setCurrentPage}
+            handleStartHunt={handleStartHunt}
+          />
         );
       case "library":
         return (
@@ -93,6 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             onSelectSite={(siteData) => {
               setSelectedSiteData(siteData);
               setCurrentPage("mindmap");
+              setWidth(1320);
             }}
             onStartHunt={handleStartHunt}
           />
@@ -112,13 +116,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               onGoBack={() => {
                 setCurrentPage("library");
                 setWidth(400);
-              }}
-              onEnlarge={() => {
-                if (width === 400) {
-                  setWidth(1320);
-                } else {
-                  setWidth(400);
-                }
               }}
             />
           )

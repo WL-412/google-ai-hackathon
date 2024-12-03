@@ -11,12 +11,11 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import FitScreenIcon from "@mui/icons-material/FitScreen";
+import "../styles/MindMap.css";
 
 interface MindMapProps {
   siteData: { title: string; entries: any[]; siteUrl?: string };
   onGoBack: () => void;
-  onEnlarge: () => void;
 }
 
 type DataType = {
@@ -74,7 +73,7 @@ const ExploreNode = ({
   );
 };
 
-const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
+const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
   const [currentSiteData, setCurrentSiteData] = useState(siteData);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
@@ -287,19 +286,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack, onEnlarge }) => {
       >
         <ArrowBackIosIcon /> Back
       </button>
-      <button
-        onClick={onEnlarge}
-        style={{
-          position: "absolute",
-          top: 10,
-          right: 50,
-          zIndex: 2147483647,
-          cursor: "pointer",
-        }}
-      >
-        <FitScreenIcon />
-      </button>
-      <div style={{ width: "100vw", height: "100vh" }}>
+      <div className="mindmap-container">
         <ReactFlow
           nodes={nodes}
           edges={edges}
