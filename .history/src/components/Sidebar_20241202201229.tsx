@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     switch (currentPage) {
       case "landing":
         return (
-          <LandingPage setCurrentPage={setCurrentPage} handleStartHunt={handleStartHunt} />
+          <LandingPage setCurrentPage={setCurrentPage} handleStartHunt={handleStartHunt}></LandingPage>
         );
       case "library":
         return (

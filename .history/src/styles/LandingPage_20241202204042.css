@@ -1,0 +1,98 @@
+.landing-page {
+  position: absolute;
+
+  background: linear-gradient(to bottom, #f0f8ff, #e6e6fa);
+  /* Example background gradient */
+  overflow: hidden;
+  /* Ensures figures outside the screen are clipped */
+}
+
+/* Title Image in the Center */
+.title-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.title-image {
+  max-width: 60%;
+  /* Adjust size as needed */
+  height: auto;
+}
+
+
+/* Button 1: My Library */
+.button-library {
+  position: absolute;
+  width: 252px;
+  height: 59px;
+  top: 691px;
+  left: 74px;
+  gap: 0px;
+  border-radius: 10px 0px 0px 0px;
+  background: #4caf50;
+  /* Default button color */
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 1;
+  /* Change this to 0 if it's meant to be fully transparent */
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.button-library:hover {
+  transform: scale(1.05);
+  background-color: #45a049;
+}
+
+/* Button 2: Start a Hunt */
+.button-hunt {
+  position: absolute;
+  width: 252px;
+  height: 59px;
+  top: 761px;
+  left: 74px;
+  gap: 0px;
+  border-radius: 10px 0px 0px 0px;
+  background: #4caf50;
+  /* Default button color */
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  opacity: 1;
+  /* Change this to 0 if it's meant to be fully transparent */
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.button-hunt:hover {
+  transform: scale(1.05);
+  background-color: #45a049;
+}
+
+/* Background Figures */
+.background-figure {
+  position: absolute;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.figure-top-left {
+  top: 10%;
+  left: 5%;
+  width: 100px;
+  height: 100px;
+}
+
+.figure-above-button {
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 150px;
+}

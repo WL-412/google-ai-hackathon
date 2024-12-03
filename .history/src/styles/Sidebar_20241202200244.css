@@ -1,7 +1,7 @@
 .extension-sidebar {
-    width: 350px;
-    height: 750px;
-    background-color: #EBF495;
+    width: 350vw;
+    height: 300vh;
+    background-color: #EBEBEB;
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 15px;
@@ -56,6 +56,10 @@
     margin-bottom: 20px;
 }
 
+.extension-loading-text {
+    font-size: 14px;
+    color: #666;
+}
 
 .resize-handle {
     position: absolute;

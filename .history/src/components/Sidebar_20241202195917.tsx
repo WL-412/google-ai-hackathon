@@ -6,7 +6,6 @@ import LoadingPage from "./LoadingPage";
 import "../styles/Sidebar.css";
 import CloseIcon from "@mui/icons-material/Close";
 import FinishQuizPage from "./FinishQuizPage";
-import LandingPage from "./LandingPage";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -84,7 +83,18 @@ const Sidebar: React.FC<SidebarProps> = ({
     switch (currentPage) {
       case "landing":
         return (
-          <LandingPage setCurrentPage={setCurrentPage} handleStartHunt={handleStartHunt} />
+          <div className="landing-page">
+            <h3>Welcome!</h3>
+            <button
+              className="extension-button"
+              onClick={() => setCurrentPage("library")}
+            >
+              My Library
+            </button>
+            <button className="extension-button" onClick={handleStartHunt}>
+              Start a Hunt
+            </button>
+          </div>
         );
       case "library":
         return (
@@ -94,7 +104,6 @@ const Sidebar: React.FC<SidebarProps> = ({
               setSelectedSiteData(siteData);
               setCurrentPage("mindmap");
             }}
-            onStartHunt={handleStartHunt}
           />
         );
       case "hunt":
