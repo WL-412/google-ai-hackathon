@@ -12,6 +12,7 @@ import {
 import "@xyflow/react/dist/style.css";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import "../styles/MindMap.css";
+import { Background } from "reactflow";
 
 interface MindMapProps {
   siteData: { title: string; entries: any[]; siteUrl?: string };
@@ -34,41 +35,59 @@ const AnswerNode = ({ data }: { data: DataType }) => {
   };
 
   return (
-    <div className="react-flow__node-default">
+    <div className="answer-node">
       <Handle type="target" position={Position.Left} />
       {isEditing ? (
-        <div>
+        <div className="edit-mode">
           <textarea
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
-            style={{ width: "100%", height: "60px" }}
+            style={{ width: "100%", height: "80px" }}
           />
-          <button onClick={handleSave}>Save</button>
+          <button className="save-button" onClick={handleSave}>
+            Save
+          </button>
         </div>
       ) : (
-        <div>
-          <div>{data.label}</div>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
-          <button onClick={data.onLearnMore}>Learn More</button>
+        <div className="content">
+          <div className="answer-content">{data.label}</div>
+          <div className="answer-buttons">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="answer-node-edit-button"
+            >
+              Edit
+            </button>
+            <button
+              onClick={data.onLearnMore}
+              className="answer-node-learn-more"
+            >
+              Learn More
+            </button>
+          </div>
         </div>
       )}
       <Handle type="source" position={Position.Right} />
     </div>
   );
 };
-
 const ExploreNode = ({
   data,
 }: {
   data: { label: string; onClose: () => void };
 }) => {
   return (
-    <div className="react-flow__node-default">
+    <div className="explore-node">
       <Handle type="target" position={Position.Left} />
-      <div>
-        <div>{data.label}</div>
-        <button onClick={data.onClose}>Close</button>
+      <div className="content">
+        <div className="explore-content">{data.label}</div>
+        <div className="buttons">
+          <button onClick={data.onClose} className="explore-node-close-button">
+            Close
+          </button>
+        </div>
       </div>
+      <Handle type="source" position={Position.Right} />
     </div>
   );
 };
@@ -79,6 +98,8 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
   const [edges, setEdges] = useState<Edge[]>([]);
   const [expandedAnswer, setExpandedAnswer] = useState<string | null>(null);
   const [expandedExplore, setExpandedExplore] = useState<string | null>(null);
+
+  const reading = chrome.runtime.getURL("./public/reading.png");
 
   useEffect(() => {
     if (chrome && chrome.storage && chrome.storage.local) {
@@ -181,13 +202,13 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
         id: "root",
         type: "defaultNode",
         data: { label: currentSiteData.title },
-        position: { x: -300, y: 300 },
+        position: { x: -900, y: 300 },
       },
       ...currentSiteData.entries.map((entry, index) => ({
         id: `question-${index}`,
         type: "defaultNode",
         data: { label: entry.question },
-        position: { x: -100, y: (index + 1) * 150 },
+        position: { x: -400, y: (index + 1) * 150 },
         style: { cursor: "pointer" },
       })),
       ...currentSiteData.entries.flatMap((entry, index) => [
@@ -200,7 +221,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
             onContentChange: (newContent: string) =>
               handleAnswerContentChange(index, newContent),
           },
-          position: { x: 100, y: (index + 1) * 150 },
+          position: { x: 0, y: (index + 1) * 150 },
           hidden: expandedAnswer !== `question-${index}`,
         },
         {
@@ -210,7 +231,7 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
             label: entry.explore,
             onClose: handleCloseExploreNode,
           },
-          position: { x: 300, y: (index + 1) * 150 },
+          position: { x: 400, y: (index + 1) * 150 },
           hidden: expandedExplore !== `answer-${index}`,
           style: { width: "300px" },
         },
@@ -265,9 +286,9 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
   );
 
   const DefaultNode = ({ data }: { data: DataType }) => (
-    <div className="react-flow__node-default">
+    <div className="default-node">
       <Handle type="target" position={Position.Left} />
-      <div>{data.label}</div>
+      <div className="default-node-content">{data.label}</div>
       <Handle type="source" position={Position.Right} />
     </div>
   );
@@ -280,12 +301,13 @@ const MindMap: React.FC<MindMapProps> = ({ siteData, onGoBack }) => {
 
   return (
     <div>
-      <button
-        onClick={onGoBack}
-        style={{ position: "absolute", top: 10, left: 10, zIndex: 2147483647 }}
-      >
-        <ArrowBackIosIcon /> Back
-      </button>
+      <div className="mindmap-header">
+        <button className="back-button" onClick={onGoBack}>
+          Back
+        </button>
+        <h1 className="header-title">SUMMARY</h1>
+      </div>
+      <img src={reading} alt="Reading" className="reading-image" />
       <div className="mindmap-container">
         <ReactFlow
           nodes={nodes}
