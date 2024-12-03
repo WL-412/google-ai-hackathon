@@ -4,7 +4,7 @@ import Lottie from 'react-lottie-player';
 
 const LoadingPage: React.FC = () => {
 
-  const animationPath = chrome.runtime.getURL('./public/anime/小五.json');
+  const animationPath = chrome.runtime.getURL('./public/anime/小五动画.json');
 
   return (
     <div>
