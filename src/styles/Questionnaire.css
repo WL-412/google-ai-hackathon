@@ -74,10 +74,43 @@
     justify-content: space-between;
 }
 
-.action-button,
+.action-button {
+    position: relative;
+    background-color: #F7F1ED;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    text-align: center;
+}
+
+.tooltip img {
+    width: 250px;
+    height: auto;
+}
+
+.action-button:hover .tooltip {
+    display: block;
+    /* Show the tooltip on hover */
+}
+
 .submit-button {
-    background: #f5f5f5;
-    color: #1e1e1e;
+    background: #E2F763;
+    color: #000000;
     border: none;
     border-radius: 8px;
     padding: 8px 16px;
@@ -85,10 +118,17 @@
     transition: 0.3s;
 }
 
-.action-button:hover,
+.submit-button:disabled,
+.submit-button.disable {
+    background: #F7F1ED;
+    color: #AAAAAA;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
 .submit-button:hover {
-    background: #88c148;
-    color: #fff;
+    background: #d9eb5e;
 }
 
 .correct-answer {
@@ -122,11 +162,16 @@
 }
 
 .highlight-button {
-    background-color: #000000;
-    color: #FFFFFF;
+    background-color: #A9BAFF;
+    color: #000000;
     border: none;
     border-radius: 116px;
     padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .finish-button {

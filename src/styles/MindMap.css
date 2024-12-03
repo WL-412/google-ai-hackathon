@@ -2,4 +2,210 @@
     background-color: #C2D1FF;
     width: 100vw;
     height: 100vh;
+    position: relative;
+}
+
+.mindmap-header {
+    background-color: #C2D1FF;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    position: relative;
+    gap: 10px;
+    padding: 10px;
+    padding-left: 20px;
+    border-bottom: 3px solid #F7F1ED;
+}
+
+.back-button {
+    padding-top: 10px;
+    background: none;
+    border: none;
+    color: #000;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: auto;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+    margin: 0;
+}
+
+.answer-node {
+    background-color: #f6faff;
+    border: 1px solid #d8e3e8;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    width: 300px;
+    box-sizing: border-box;
+}
+
+.answer-content {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333333;
+}
+
+.answer-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.answer-node-edit-button {
+    background-color: #e2f763;
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.answer-node-edit-button:hover {
+    background-color: #d9eb5e;
+}
+
+.answer-node-learn-more {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.answer-node-learn-more:hover {
+    background-color: #333333;
+}
+
+.edit-mode textarea {
+    border: 1px solid #d8e3e8;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+
+.save-button {
+    background-color: #e2f763;
+    color: #000;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.save-button:hover {
+    background-color: #d9eb5e;
+}
+
+.explore-node {
+    background-color: #f6faff;
+    /* Light blue background */
+    border: 1px solid #d8e3e8;
+    /* Subtle border */
+    border-radius: 8px;
+    /* Rounded corners */
+    padding: 16px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow */
+    font-family: Arial, sans-serif;
+    width: 300px;
+    box-sizing: border-box;
+}
+
+.explore-content {
+    background-color: #f8f9fa;
+    /* Light gray background */
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333333;
+    margin-bottom: 12px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    /* Center aligns the Close button */
+}
+
+.explore-node-close-button {
+    background-color: #e2f763;
+    /* Yellow button color */
+    color: #000000;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.explore-node-close-button:hover {
+    background-color: #d9eb5e;
+    /* Slightly darker yellow on hover */
+}
+
+.default-node {
+    background-color: #f6faff;
+    /* Light blue background */
+    border: 1px solid #d8e3e8;
+    /* Subtle border */
+    border-radius: 12px;
+    /* Rounded corners for the node */
+    padding: 16px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    /* Light shadow for elevation */
+    width: 250px;
+    /* Adjust width for consistent size */
+    text-align: center;
+    /* Center-align text */
+    box-sizing: border-box;
+}
+
+.default-node-content {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333333;
+    /* Dark text color */
+}
+
+.react-flow__handle {
+    background: #d8e3e8;
+    /* Match the border color */
+    border-radius: 50%;
+}
+
+.reading-image {
+    position: absolute;
+    top: 60px;
+    right: 110px;
+    width: 80px;
+    /* Adjust width for appropriate size */
+    height: auto;
+    /* Maintain aspect ratio */
+    z-index: 2000;
 }
