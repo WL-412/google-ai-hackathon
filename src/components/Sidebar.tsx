@@ -31,10 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [questionAnswerPairs, setQuestionAnswerPairs] = useState<
     { question: string; answer: string }[]
   >([]);
-  const [points, setPoints] = useState<number>(0);
 
   const handleFinishHunt = () => {
-    setPoints(questionAnswerPairs.length * 25);
     setCurrentPage("finish");
   };
 
@@ -128,7 +126,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             onBackToHome={() => setCurrentPage("landing")}
             onViewSummary={() => setCurrentPage("library")}
             questionsCount={8}
-            points={points}
           />
         );
       default:

@@ -5,37 +5,37 @@ interface FinishQuizPageProps {
   onBackToHome: () => void;
   onViewSummary: () => void;
   questionsCount: number;
-  points: number;
 }
 
 const FinishQuizPage: React.FC<FinishQuizPageProps> = ({
   onBackToHome,
   onViewSummary,
   questionsCount,
-  points,
 }) => {
+  const background = chrome.runtime.getURL("./public/FinishQuizPage.png");
+  const standingLogo = chrome.runtime.getURL(
+    "./public/landing-page/above-button.png"
+  );
+
   return (
-    <div className="finish-quiz-page">
-      <h1 className="finish-title">YOU ROCK!</h1>
-      <p className="finish-subtitle">Don't forget to review the hunt summary</p>
-      <div className="finish-stats">
-        <div className="finish-stat">
+    <div
+      className="finish-quiz-page"
+      style={{ backgroundImage: `url(${background})` }}
+    >
+      <div className="finish-content">
+        <div className="finish-points">
           <span>{questionsCount}</span>
           <p>questions</p>
         </div>
-        <div className="finish-stat">
-          <span>{points}</span>
-          <p>points</p>
+        <img src={standingLogo} alt="Character Logo" className="finish-logo" />
+        <div className="finish-actions">
+          <button className="finish-button white" onClick={onBackToHome}>
+            Back to Home Page
+          </button>
+          <button className="finish-button black" onClick={onViewSummary}>
+            View Hunt Summary
+          </button>
         </div>
-      </div>
-      <div className="finish-character"></div>
-      <div className="finish-actions">
-        <button className="finish-button white" onClick={onBackToHome}>
-          Back to Home Page
-        </button>
-        <button className="finish-button black" onClick={onViewSummary}>
-          View Hunt Summary
-        </button>
       </div>
     </div>
   );

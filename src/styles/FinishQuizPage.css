@@ -1,58 +1,83 @@
 .finish-quiz-page {
-    text-align: center;
-    padding: 20px;
-    background-color: #edf3ff;
-}
-
-.finish-title {
-    font-size: 36px;
-    font-weight: bold;
-    color: #1e1e1e;
-}
-
-.finish-subtitle {
-    font-size: 14px;
-    color: #666;
-}
-
-.finish-stats {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    color: #000;
 }
 
-.finish-stat {
-    background-color: #d7f5a7;
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
+.finish-content {
+    padding-top: 150px;
+    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.finish-points {
+    background-color: #e2f763;
+    border-radius: 60px;
+    width: 160px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    font-size: 32px;
     font-weight: bold;
     color: #000;
 }
 
+.finish-points p {
+    font-size: 16px;
+    margin: 0;
+    color: #000;
+}
+
+.finish-logo {
+    width: 120px;
+    height: auto;
+    margin-top: 20px;
+}
+
 .finish-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     margin-top: 20px;
 }
 
 .finish-button {
-    padding: 10px 20px;
+    width: 300px;
+    padding: 12px;
     border-radius: 8px;
-    cursor: pointer;
     font-size: 16px;
-    margin: 10px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
 }
 
 .finish-button.white {
-    background-color: #fff;
+    background-color: #ffffff;
     color: #000;
 }
 
+.finish-button.white:hover {
+    background-color: #f0f0f0;
+}
+
 .finish-button.black {
-    background-color: #000;
-    color: #fff;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.finish-button.black:hover {
+    background-color: #333333;
 }
