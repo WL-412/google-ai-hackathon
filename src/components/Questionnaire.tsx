@@ -24,6 +24,10 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
 
   const [showPopup, setShowPopup] = useState(false);
 
+  const highlightpen = chrome.runtime.getURL("./public/HighlightPen.png");
+  const CopyPenToolTip = chrome.runtime.getURL("./public/CopyPenToolTip.png");
+  const copypen = chrome.runtime.getURL("./public/copypen.png");
+
   const handleFinish = () => {
     setShowPopup(true);
   };
@@ -171,7 +175,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
                 className="action-button"
                 onClick={() => handleHighlightPen(currentQuestionIndex, true)}
               >
+                <img src={copypen} alt="copypen-image" />
                 Copy Pen
+                <div className="tooltip">
+                  <img src={CopyPenToolTip} alt="Tooltip Image" />
+                </div>
               </button>
               <button
                 onClick={() => validateAnswer(currentQuestionIndex)}
@@ -185,7 +193,11 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
 
           {submitted[currentQuestionIndex] ? (
             <div className="tips-section">
-              <p className="score-display">{feedback[currentQuestionIndex]}</p>
+              {feedback[currentQuestionIndex] === "" ? (
+                <p className="score-display">Calculating your score...</p>
+              ) : (
+                feedback[currentQuestionIndex]
+              )}
               <p className="correct-answer">
                 The correct answer is:{" "}
                 {questionAnswerPairs[currentQuestionIndex].answer}
@@ -212,6 +224,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
               className="highlight-button"
               onClick={() => handleHighlightPen(currentQuestionIndex, false)}
             >
+              <img src={highlightpen} alt="highlighter" />
               Highlighter
             </button>
             <button className="finish-button" onClick={handleFinish}>
