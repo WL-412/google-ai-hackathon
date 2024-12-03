@@ -35,7 +35,8 @@
     {
       "resources": [
         "public/*.png",
-        "public/anime/*.json"
+        "public/anime/*.json",
+        "public/anime/*.gif"
       ],
       "matches": [
         "<all_urls>"
