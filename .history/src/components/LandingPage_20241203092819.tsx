@@ -25,14 +25,6 @@ const LandingPage: React.FC<LandingPageProps> = ({
   .title-subtext {
     font-family: 'CustomFont', sans-serif;
   }
-
-  .button-library {
-    font-family: 'CustomFont', sans-serif;
-  }
-
-  .button-hunt {
-    font-family: 'CustomFont', sans-serif;
-  }
 `;
   document.head.appendChild(style);
 

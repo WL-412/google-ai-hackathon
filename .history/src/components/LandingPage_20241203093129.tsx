@@ -22,15 +22,15 @@ const LandingPage: React.FC<LandingPageProps> = ({
     src: url('${fontUrl}') format('truetype');
   }
 
-  .title-subtext {
+  .title-text {
     font-family: 'CustomFont', sans-serif;
   }
 
-  .button-library {
+    .button-library {
     font-family: 'CustomFont', sans-serif;
   }
 
-  .button-hunt {
+    .button-hunt {
     font-family: 'CustomFont', sans-serif;
   }
 `;

@@ -12,6 +12,9 @@ const LoadingPage: React.FC = () => {
     justifyContent: 'center',
     alignItems: 'center',
     height: '100vh',
+    margin: 0,       // Remove any margin that might add extra height
+    padding: 0,      // Remove any padding
+    overflow: 'hidden', // Prevent scrolling
   };
 
   const lottieStyle: React.CSSProperties = {

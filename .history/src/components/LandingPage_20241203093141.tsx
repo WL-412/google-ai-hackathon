@@ -22,7 +22,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
     src: url('${fontUrl}') format('truetype');
   }
 
-  .title-subtext {
+  .title-text {
     font-family: 'CustomFont', sans-serif;
   }
 

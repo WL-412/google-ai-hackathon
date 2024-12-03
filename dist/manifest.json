@@ -36,7 +36,8 @@
       "resources": [
         "public/*.png",
         "public/anime/*.json",
-        "public/anime/*.gif"
+        "public/anime/*.gif",
+        "public/Synonym_Complete/Fonts/TTF/*.ttf"
       ],
       "matches": [
         "<all_urls>"
