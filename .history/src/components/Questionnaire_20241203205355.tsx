@@ -193,11 +193,16 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
 
           {submitted[currentQuestionIndex] ? (
             <div className="tips-section">
-              {feedback[currentQuestionIndex] === "" ? (
-                <p className="score-display">Calculating your score...</p>
-              ) : (
-                feedback[currentQuestionIndex]
-              )}
+              <div className="title-and-anime">
+                {feedback[currentQuestionIndex] === "" ? (
+                  <p className="score-display">Calculating your score...</p>
+                ) : (
+                  feedback[currentQuestionIndex]
+                )}
+                <div className="gif-container">
+                  <img src={tipsFigure} alt="gif" className="gif" />
+                </div>
+              </div>
               <p className="correct-answer">
                 The correct answer is:{" "}
                 {questionAnswerPairs[currentQuestionIndex].answer}
@@ -205,7 +210,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             </div>
           ) : (
             <div className="tips-section">
-              <p className="tips-header">
+              <p>
                 <strong>Tips</strong>
               </p>
               <p>

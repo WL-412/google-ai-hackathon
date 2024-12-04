@@ -130,11 +130,12 @@
     color: #666;
 }
 
+.list-gif {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
 .list-gif-image {
-    position: absolute;
-    top: 5%;
-    right: 3%;
     width: 150px;
     height: auto;
 }

@@ -27,7 +27,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const highlightpen = chrome.runtime.getURL("./public/HighlightPen.png");
   const CopyPenToolTip = chrome.runtime.getURL("./public/CopyPenToolTip.png");
   const copypen = chrome.runtime.getURL("./public/copypen.png");
-  const tipsFigure = chrome.runtime.getURL('./public/anime/小2动画.gif');
+  const tipsFigure = chrome.runtime.getURL('./public/anime/小1.gif');
 
   const handleFinish = () => {
     setShowPopup(true);
@@ -198,6 +198,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
               ) : (
                 feedback[currentQuestionIndex]
               )}
+              <div className="gif-container">
+                <img src={tipsFigure} alt="gif" className="gif" />
+              </div>
               <p className="correct-answer">
                 The correct answer is:{" "}
                 {questionAnswerPairs[currentQuestionIndex].answer}
@@ -205,9 +208,12 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             </div>
           ) : (
             <div className="tips-section">
-              <p className="tips-header">
+              <p>
                 <strong>Tips</strong>
               </p>
+              <div className="gif-container">
+                <img src={tipsFigure} alt="gif" className="gif" />
+              </div>
               <p>
                 Use the <strong>Highlighter</strong> to highlight notes while
                 you read.
@@ -218,10 +224,6 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
               </p>
             </div>
           )}
-
-          <div className="gif-container">
-            <img src={tipsFigure} alt="gif" className="gif" />
-          </div>
 
           <div className="footer">
             <button

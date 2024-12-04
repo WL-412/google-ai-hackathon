@@ -27,7 +27,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   const highlightpen = chrome.runtime.getURL("./public/HighlightPen.png");
   const CopyPenToolTip = chrome.runtime.getURL("./public/CopyPenToolTip.png");
   const copypen = chrome.runtime.getURL("./public/copypen.png");
-  const tipsFigure = chrome.runtime.getURL('./public/anime/小2动画.gif');
+  const tipsFigure = chrome.runtime.getURL('./public/anime/小1.gif');
 
   const handleFinish = () => {
     setShowPopup(true);
@@ -205,7 +205,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
             </div>
           ) : (
             <div className="tips-section">
-              <p className="tips-header">
+              <p>
                 <strong>Tips</strong>
               </p>
               <p>

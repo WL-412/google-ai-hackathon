@@ -197,24 +197,18 @@
     align-self: flex-end;
 }
 
-.gif-container {
-    position: absolute;
-    bottom: 20%;
-    left: 65%
-}
-
 .gif {
-    width: 100px;
+    width: 50px;
     height: auto;
 }
 
-.tips-header {
-    font-family: 'Emiken Display', sans-serif;
-    /* Use a fallback font if 'Emiken Display' isn't available */
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 16.8px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
+.title-and-anime {
+    display: flex;
+    /* Enables flexbox layout */
+    justify-content: space-between;
+    /* Separates content to left and right */
+    align-items: center;
+    /* Vertically aligns content */
+    gap: 10px;
+    /* Adds space between the text and the animation */
 }

@@ -29,7 +29,7 @@ const HistoryLibrary: React.FC<HistoryLibraryProps> = ({
   };
 
   const isEmpty = Object.keys(history).length === 0;
-  const librarylogo = chrome.runtime.getURL("./public/anime/小3动画(1).gif");
+  const librarylogo = chrome.runtime.getURL("小3动画(1).gif");
 
   return (
     <div className="history-library">
@@ -52,20 +52,17 @@ const HistoryLibrary: React.FC<HistoryLibraryProps> = ({
           </button>
         </div>
       ) : (
-        <>
-          <img src={librarylogo} alt="List Animation" className="list-gif-image" />
-          <ul className="website-list">
-            {Object.keys(history).map((site) => (
-              <li
-                key={site}
-                onClick={() => handleSiteClick(site)}
-                className="website-item"
-              >
-                <h5>{history[site].title}</h5>
-              </li>
-            ))}
-          </ul>
-        </>
+        <ul className="website-list">
+          {Object.keys(history).map((site) => (
+            <li
+              key={site}
+              onClick={() => handleSiteClick(site)}
+              className="website-item"
+            >
+              <h5>{history[site].title}</h5>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

@@ -53,7 +53,9 @@ const HistoryLibrary: React.FC<HistoryLibraryProps> = ({
         </div>
       ) : (
         <>
-          <img src={librarylogo} alt="List Animation" className="list-gif-image" />
+          <div className="list-gif">
+            <img src={librarylogo} alt="List Animation" className="list-gif-image" />
+          </div>
           <ul className="website-list">
             {Object.keys(history).map((site) => (
               <li
