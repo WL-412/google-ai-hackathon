@@ -14,7 +14,7 @@ const FinishQuizPage: React.FC<FinishQuizPageProps> = ({
 }) => {
   const background = chrome.runtime.getURL("./public/FinishQuizPage.png");
   const standingLogo = chrome.runtime.getURL(
-    "./public/anime/小1.gif"
+    "./public/landing-page/above-button.png"
   );
 
   return (
