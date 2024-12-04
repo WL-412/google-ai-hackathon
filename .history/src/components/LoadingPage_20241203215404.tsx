@@ -11,7 +11,6 @@ const LoadingPage: React.FC = () => {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: '250px'
   };
 
   const lottieStyle: React.CSSProperties = {
