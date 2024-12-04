@@ -94,13 +94,13 @@
 
 .figure-top-right {
   top: 4%;
-  right: -2%;
+  right: 0%;
   width: 120px;
   height: 120px;
 }
 
 .figure-above-button {
-  top: 432px;
+  top: 440px;
   left: 70%;
   transform: translateX(-50%);
   width: 120px;
@@ -108,10 +108,10 @@
 }
 
 .figure-listen-left {
-  bottom: -6%;
+  bottom: -10%;
   left: 10%;
   transform: translateX(-50%);
-  width: 22%;
-  height: 22%;
+  width: 20%;
+  height: 20%;
   z-index: 999999;
 }

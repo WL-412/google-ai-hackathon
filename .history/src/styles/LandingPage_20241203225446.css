@@ -15,7 +15,7 @@
 
 .title-subtext {
   font-size: 16px;
-  color: #5B5B5B;
+  color: #6e7926;
   text-align: center;
   margin-top: 10px;
   white-space: nowrap;
@@ -30,7 +30,7 @@
   z-index: 10;
   width: 252px;
   height: 59px;
-  top: 550px;
+  top: 580px;
   left: 74px;
   gap: 0px;
   border-radius: 10px;
@@ -60,7 +60,7 @@
   z-index: 10;
   width: 252px;
   height: 59px;
-  top: 620px;
+  top: 650px;
   left: 74px;
   gap: 0px;
   border-radius: 10px;
@@ -93,25 +93,24 @@
 }
 
 .figure-top-right {
-  top: 4%;
-  right: -2%;
+  top: 10%;
+  right: 0%;
   width: 120px;
   height: 120px;
 }
 
 .figure-above-button {
-  top: 432px;
-  left: 70%;
+  top: 480px;
+  right: 37%;
   transform: translateX(-50%);
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
 }
 
 .figure-listen-left {
-  bottom: -6%;
+  bottom: 0%;
   left: 10%;
   transform: translateX(-50%);
   width: 22%;
   height: 22%;
-  z-index: 999999;
 }

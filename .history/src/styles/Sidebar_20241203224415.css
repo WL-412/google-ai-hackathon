@@ -7,7 +7,6 @@
     box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 15px;
     z-index: 2147483647;
     display: none;
-    overflow: hidden;
     position: relative;
     font-family: 'Arial', sans-serif;
     font-size: 14px;
