@@ -90,7 +90,7 @@
 .website-list {
     display: grid;
     list-style: none;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 30px;
     padding: 0;
     margin: 20px 0;
