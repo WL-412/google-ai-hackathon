@@ -11,34 +11,6 @@ const ConfirmationPopup: React.FC<ConfirmationPopupProps> = ({
   onClose,
   onConfirm,
 }) => {
-
-  {/* Create Font Style at Runtime */ }
-  const fontUrl = chrome.runtime.getURL('public/Synonym_Complete/Fonts/TTF/Synonym-Variable.ttf');
-  const style = document.createElement('style');
-  style.textContent = `
-      @font-face {
-        font-family: 'CustomFont';
-        src: url('${fontUrl}') format('truetype');
-      }
-    
-      .popup-content h2 p {
-        font-family: 'CustomFont', sans-serif;
-      }
-
-      .cancel-button {
-        font-family: 'CustomFont', sans-serif;
-        font-weight: bold;
-      }
-
-      .confirm-button {
-        font-family: 'CustomFont', sans-serif;
-        font-weight: bold;
-      }
-
-  }
-    `;
-  document.head.appendChild(style);
-
   return (
     <div className="confirmation-popup">
       <div className="popup-content">

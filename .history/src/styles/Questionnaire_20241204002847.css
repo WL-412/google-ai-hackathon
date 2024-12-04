@@ -16,7 +16,6 @@
     font-size: 36px;
     color: #000000;
     margin: 0;
-    font-weight: bold;
 }
 
 /* Navigation */
@@ -195,6 +194,9 @@
 }
 
 .finish-button {
+    font-family: 'Emiken Display', sans-serif;
+    font-size: 23px;
+    font-weight: 400;
     align-self: flex-end;
 }
 

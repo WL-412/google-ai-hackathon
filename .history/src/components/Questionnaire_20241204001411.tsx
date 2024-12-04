@@ -150,67 +150,14 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   
     .question-title {
       font-family: 'CustomFont', sans-serif;
-      font-weight: bold;
-      font-size: 16px;
     }
-
-    .answer-input {
-      font-family: 'CustomFont', sans-serif;
-    }
-
-    .action-button {
-      font-family: 'CustomFont', sans-serif;
-      font-weight: bold;
-    }
-
-    .submit-button {
-      font-family: 'CustomFont', sans-serif;
-      font-weight: bold;
-    }
-
-    .correct-answer {
-      font-family: 'CustomFont', sans-serif;
-    }
-
-    .tips-section p {
-      font-family: 'CustomFont', sans-serif;
-    }
-
-    .highlight-button {
-      font-family: 'CustomFont', sans-serif;
-      font-weight: bold;
-    }
-
-    .finish-button {
-      font-family: 'CustomFont', sans-serif;
-      font-weight: bold;
-    }
-
-    .question-nav-button {
-      font-family: 'CustomFont', sans-serif;
-    }
-
-    .quiz-header h1 {
-      font-family: 'CustomFont', sans-serif;
-    }
-
-    .tips-header {
-    font-family: 'CustomFont', sans-serif;
-    font-size: 20px;
-    font-weight: bold;
-    font-weight: 400;
-    line-height: 16.8px;
-    text-align: left;
-    text-underline-position: from-font;
-    text-decoration-skip-ink: none;
-}
   `;
   document.head.appendChild(style);
 
   return (
     <div className="quiz-container">
       <div className="quiz-header">
-        <h1>Your Hunt Starts</h1>
+        <h1>LET'S DO THIS</h1>
       </div>
       {questionAnswerPairs.length > 0 && (
         <div className="quiz-content">

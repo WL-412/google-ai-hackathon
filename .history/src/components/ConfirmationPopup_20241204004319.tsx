@@ -27,12 +27,10 @@ const ConfirmationPopup: React.FC<ConfirmationPopupProps> = ({
 
       .cancel-button {
         font-family: 'CustomFont', sans-serif;
-        font-weight: bold;
       }
 
       .confirm-button {
         font-family: 'CustomFont', sans-serif;
-        font-weight: bold;
       }
 
   }

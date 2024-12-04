@@ -172,7 +172,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
       font-family: 'CustomFont', sans-serif;
     }
 
-    .tips-section p {
+    .tips-section {
       font-family: 'CustomFont', sans-serif;
     }
 
@@ -186,18 +186,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
       font-weight: bold;
     }
 
-    .question-nav-button {
-      font-family: 'CustomFont', sans-serif;
-    }
-
-    .quiz-header h1 {
-      font-family: 'CustomFont', sans-serif;
-    }
-
     .tips-header {
     font-family: 'CustomFont', sans-serif;
     font-size: 20px;
-    font-weight: bold;
     font-weight: 400;
     line-height: 16.8px;
     text-align: left;
@@ -210,7 +201,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   return (
     <div className="quiz-container">
       <div className="quiz-header">
-        <h1>Your Hunt Starts</h1>
+        <h1>LET'S DO THIS</h1>
       </div>
       {questionAnswerPairs.length > 0 && (
         <div className="quiz-content">
