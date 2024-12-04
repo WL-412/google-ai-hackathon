@@ -2,11 +2,10 @@
 .history-library {
     padding: 20px;
     background-color: #C2D1FF;
-    display: flex;
     height: 100%;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-y: auto;
 }
 
 .back-button {
@@ -91,18 +90,15 @@
 .website-list {
     display: grid;
     list-style: none;
-    gap: 20px;
-    padding: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 30px;
+    padding: 0;
+    margin: 20px 0;
     width: 100%;
-    grid-template-columns: repeat(2, 175px);
-    /* Two fixed-width columns */
-    justify-content: center;
-    /* Center the grid items horizontally */
 }
 
 /* Website Item */
 .website-item {
-    width: 175px;
     background: #fff;
     border: none;
     border-radius: 12px;
@@ -110,7 +106,8 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: box-shadow 0.3s, background-color 0.3s;
-    height: 175px;
+    height: 160px;
+    /* Set consistent height for items */
 }
 
 /* Item Hover Effect */
