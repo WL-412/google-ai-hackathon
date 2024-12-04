@@ -15,7 +15,7 @@
 
 .title-subtext {
   font-size: 16px;
-  color: #5B5B5B;
+  color: #6e7926;
   text-align: center;
   margin-top: 10px;
   white-space: nowrap;
@@ -93,14 +93,14 @@
 }
 
 .figure-top-right {
-  top: 4%;
-  right: -2%;
+  top: 10%;
+  right: 0%;
   width: 120px;
   height: 120px;
 }
 
 .figure-above-button {
-  top: 432px;
+  top: 450px;
   left: 70%;
   transform: translateX(-50%);
   width: 120px;
@@ -108,10 +108,9 @@
 }
 
 .figure-listen-left {
-  bottom: -6%;
+  bottom: 0%;
   left: 10%;
   transform: translateX(-50%);
-  width: 22%;
-  height: 22%;
-  z-index: 999999;
+  width: 20%;
+  height: 20%;
 }

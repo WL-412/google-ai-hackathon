@@ -30,17 +30,6 @@
     font-size: 14px;
 }
 
-.extension-sidebar-minimize {
-    position: absolute;
-    top: 6px;
-    right: 35px;
-    z-index: 2147483647;
-    cursor: pointer;
-    background: none;
-    border: none;
-    font-size: 14px;
-}
-
 .extension-sidebar-content {
     height: 100%;
     overflow-y: auto;
