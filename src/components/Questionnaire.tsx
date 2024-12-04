@@ -11,6 +11,7 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
   questionAnswerPairs,
   onFinish,
 }) => {
+  // Initialize state variables
   const [answers, setAnswers] = useState<string[]>(
     Array(questionAnswerPairs.length).fill("")
   );
@@ -22,12 +23,36 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
     Array(questionAnswerPairs.length).fill(false)
   );
 
+  // Load state from chrome.storage.local when the component mounts
+  useEffect(() => {
+    chrome.storage.local.get(
+      ["answers", "currentQuestionIndex", "feedback", "submitted"],
+      (result) => {
+        if (result.answers) setAnswers(result.answers);
+        if (result.currentQuestionIndex !== undefined)
+          setCurrentQuestionIndex(result.currentQuestionIndex);
+        if (result.feedback) setFeedback(result.feedback);
+        if (result.submitted) setSubmitted(result.submitted);
+      }
+    );
+  }, []);
+
+  // Save state to chrome.storage.local whenever it changes
+  useEffect(() => {
+    chrome.storage.local.set({
+      answers,
+      currentQuestionIndex,
+      feedback,
+      submitted,
+    });
+  }, [answers, currentQuestionIndex, feedback, submitted]);
+
   const [showPopup, setShowPopup] = useState(false);
 
   const highlightpen = chrome.runtime.getURL("./public/HighlightPen.png");
   const CopyPenToolTip = chrome.runtime.getURL("./public/CopyPenToolTip.png");
   const copypen = chrome.runtime.getURL("./public/copypen.png");
-  const tipsFigure = chrome.runtime.getURL('./public/anime/小2动画.gif');
+  const tipsFigure = chrome.runtime.getURL("./public/anime/小2动画.gif");
 
   const handleFinish = () => {
     setShowPopup(true);
@@ -151,8 +176,9 @@ const Questionnaire: React.FC<QuestionnaireProps> = ({
               <button
                 key={index}
                 onClick={() => setCurrentQuestionIndex(index)}
-                className={`question-nav-button ${currentQuestionIndex === index ? "active" : ""
-                  }`}
+                className={`question-nav-button ${
+                  currentQuestionIndex === index ? "active" : ""
+                }`}
               >
                 Q{index + 1}
               </button>
